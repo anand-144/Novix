@@ -66,8 +66,23 @@ router.delete("/remove-wishlist", authenticateToken, async (req, res) => {
       return res.status(500).json({ message: error.message });
     }
   });
+
+  //get whislist for particular user
+
+  router.get("/get-wishlist", authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user.id; // Use the user ID from the token
+      const userData = await User.findById(userId).populate("wishlist");
+      if (!userData) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      return res.json({ status: "success", data: userData.wishlist });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: error.message });
+    }
+  });
   
-
-
+  
 
 module.exports = router;
