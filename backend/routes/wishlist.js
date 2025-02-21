@@ -36,7 +36,7 @@ router.put("/add-wishlist", authenticateToken, async (req, res) => {
 
 //remove from wishlist
 
-router.delete("/remove-wishlist", authenticateToken, async (req, res) => {
+router.put("/remove-wishlist", authenticateToken, async (req, res) => {
     try {
       // Get bookid from headers (ensure key is 'bookid' in lower-case)
       const { bookid } = req.headers;

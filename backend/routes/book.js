@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { authenticateToken } = require("./userAuth");
 const Book = require("../models/book");
-const upload = require("../middlewares/upload");
+const upload = require("../middleware/upload");
 
 // Create a new book with image upload (uploads to Cloudinary)
 router.post("/newbook", authenticateToken, upload.array('images', 3), async (req, res) => {
