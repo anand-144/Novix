@@ -6,7 +6,6 @@ const bookSchema = new mongoose.Schema(
       type: [],
       required: true, // if you want at least one image
     },
-    
     title: {
       type: String,
       required: true,
@@ -58,9 +57,9 @@ const bookSchema = new mongoose.Schema(
     },
     publisher: {
       type: String,
-    },
+    }, 
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Book", bookSchema);
+module.exports = mongoose.models.Book || mongoose.model("Book", bookSchema);

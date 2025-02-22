@@ -7,12 +7,10 @@ const upload = require("../middleware/upload");
 // Create a new book with image upload (uploads to Cloudinary)
 router.post("/newbook", authenticateToken, upload.array('images', 3), async (req, res) => {
   try {
-    // Only admin users can add books
     if (req.user.role !== "admin") {
       return res.status(403).json({ message: "Access denied: Only admins can add books" });
     }
 
-    // Extract Cloudinary URLs for each uploaded image
     const imageUrls = req.files.map(file => file.path);
 
     const newBook = new Book({
