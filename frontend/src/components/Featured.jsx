@@ -1,49 +1,57 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import BookCard from './BookCard/BookCard';
 
 const Featured = () => {
-  // Example featured books (replace these with actual data)
-  const featuredBooks = [
-    {
-      title: "Book Title 1",
-      author: "Author 1",
-      image: "https://via.placeholder.com/150",
-    },
-    {
-      title: "Book Title 2",
-      author: "Author 2",
-      image: "https://via.placeholder.com/150",
-    },
-    {
-      title: "Book Title 3",
-      author: "Author 3",
-      image: "https://via.placeholder.com/150",
-    },
-    {
-      title: "Book Title 4",
-      author: "Author 4",
-      image: "https://via.placeholder.com/150",
-    },
-  ];
+  const [books, setBooks] = useState([]);
+  const [visibleCount, setVisibleCount] = useState(4);
+
+  useEffect(() => {
+    const fetchAllBooks = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/book/allbooks/`);
+        setBooks(response.data.books);
+      } catch (error) {
+        console.error("Error fetching books:", error);
+      }
+    };
+
+    fetchAllBooks();
+  }, []);
+
+  const highRatedBooks = books.filter((book) => book.rating >= 3.5);
+
+  const loadMore = () => {
+    setVisibleCount(prev => prev + 4);
+  };
 
   return (
     <section className="py-10 px-4 bg-gray-50">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-6 bg-gradient-to-r from-orange-500 to-orange-700 bg-clip-text text-transparent">
+        <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-8 bg-gradient-to-r from-orange-500 to-orange-700 bg-clip-text text-transparent">
           Featured Books
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {featuredBooks.map((book, index) => (
-            <div key={index} className="bg-white rounded-lg p-4">
-              <img
-                src={book.image}
-                alt={book.title}
-                className="w-full h-40 object-cover rounded-md mb-4"
-              />
-              <h3 className="text-xl font-semibold text-gray-800">{book.title}</h3>
-              <p className="text-gray-600 mt-2">{book.author}</p>
+        {highRatedBooks.length > 0 ? (
+          <>
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
+              {highRatedBooks.slice(0, visibleCount).map((book, index) => (
+                <BookCard key={index} data={book} />
+              ))}
             </div>
-          ))}
-        </div>
+            {highRatedBooks.length > visibleCount && (
+              <div className="mt-6 flex justify-center">
+                <button 
+                  onClick={loadMore}
+                  className="px-6 py-2 border border-orange-500 text-orange-700 rounded-full hover:bg-orange-500 hover:text-white transition-colors"
+                >
+                  Load More
+                </button>
+              </div>
+            )}
+          </>
+        ) : (
+          <p className="text-center text-gray-600">No high-rated books available.</p>
+        )}
       </div>
     </section>
   );

@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import axios from 'axios';
+import BookCard from './BookCard/BookCard';
 
 const genres = [
+  "Classic",
   "Fiction",
   "Non-Fiction",
   "Mystery",
@@ -13,66 +16,39 @@ const genres = [
   "Biography",
   "History",
   "Self-Help",
-  "Young Adult"
+  "Young Adult",
+  "Horror"
 ];
 
-// Sample data: mapping genres to sample books
-const booksByGenre = {
-  Fiction: [
-    { title: "Fiction Book 1", image: "https://via.placeholder.com/150" },
-    { title: "Fiction Book 2", image: "https://via.placeholder.com/150" },
-  ],
-  "Non-Fiction": [
-    { title: "Non-Fiction Book 1", image: "https://via.placeholder.com/150" },
-    { title: "Non-Fiction Book 2", image: "https://via.placeholder.com/150" },
-  ],
-  Mystery: [
-    { title: "Mystery Book 1", image: "https://via.placeholder.com/150" },
-    { title: "Mystery Book 2", image: "https://via.placeholder.com/150" },
-  ],
-  Thriller: [
-    { title: "Thriller Book 1", image: "https://via.placeholder.com/150" },
-    { title: "Thriller Book 2", image: "https://via.placeholder.com/150" },
-  ],
-  Fantasy: [
-    { title: "Fantasy Book 1", image: "https://via.placeholder.com/150" },
-    { title: "Fantasy Book 2", image: "https://via.placeholder.com/150" },
-  ],
-  "Sci-Fi": [
-    { title: "Sci-Fi Book 1", image: "https://via.placeholder.com/150" },
-    { title: "Sci-Fi Book 2", image: "https://via.placeholder.com/150" },
-  ],
-  Romance: [
-    { title: "Romance Book 1", image: "https://via.placeholder.com/150" },
-    { title: "Romance Book 2", image: "https://via.placeholder.com/150" },
-  ],
-  Biography: [
-    { title: "Biography Book 1", image: "https://via.placeholder.com/150" },
-    { title: "Biography Book 2", image: "https://via.placeholder.com/150" },
-  ],
-  History: [
-    { title: "History Book 1", image: "https://via.placeholder.com/150" },
-    { title: "History Book 2", image: "https://via.placeholder.com/150" },
-  ],
-  "Self-Help": [
-    { title: "Self-Help Book 1", image: "https://via.placeholder.com/150" },
-    { title: "Self-Help Book 2", image: "https://via.placeholder.com/150" },
-  ],
-  "Young Adult": [
-    { title: "Young Adult Book 1", image: "https://via.placeholder.com/150" },
-    { title: "Young Adult Book 2", image: "https://via.placeholder.com/150" },
-  ],
-};
+const Genres = () => {
+  const [value, setValue] = useState(0);
+  const [allBooks, setAllBooks] = useState([]);
+  const [visibleCount, setVisibleCount] = useState(4);
 
-const Geners = () => {
-  const [value, setValue] = React.useState(0);
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/book/allbooks/`);
+        setAllBooks(response.data.books);
+      } catch (error) {
+        console.error("Error fetching books:", error);
+      }
+    };
+
+    fetchBooks();
+  }, []);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    setVisibleCount(4);
   };
 
   const selectedGenre = genres[value];
-  const books = booksByGenre[selectedGenre] || [];
+  const filteredBooks = allBooks.filter(book => book.genre === selectedGenre);
+
+  const loadMore = () => {
+    setVisibleCount(prev => prev + 4);
+  };
 
   return (
     <div className="px-4 py-4 flex flex-col items-center">
@@ -86,9 +62,7 @@ const Geners = () => {
           variant="scrollable"
           scrollButtons="auto"
           sx={{
-            "& .MuiTabs-indicator": {
-              backgroundColor: "#c2410c", // Orange-700
-            },
+            "& .MuiTabs-indicator": { backgroundColor: "#c2410c" },
           }}
         >
           {genres.map((genre, index) => (
@@ -98,9 +72,7 @@ const Geners = () => {
               sx={{
                 textTransform: "none",
                 fontSize: { xs: "0.75rem", sm: "0.875rem", md: "1rem" },
-                "&.Mui-selected": {
-                  color: "#c2410c", // Orange-700 for selected tab
-                },
+                "&.Mui-selected": { color: "#c2410c" },
               }}
               className="text-sm sm:text-base md:text-lg"
             />
@@ -108,32 +80,32 @@ const Geners = () => {
         </Tabs>
       </div>
       
-      {/* Books Grid */}
       <div className="mt-8 w-full max-w-6xl">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">
           {selectedGenre} Books
         </h2>
-        {books.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            {books.map((book, index) => (
-              <div key={index} className="bg-white p-2 rounded-lg">
-                <img
-                  src={book.image}
-                  alt={book.title}
-                  className="w-full h-32 object-cover rounded-md"
-                />
-                <h3 className="mt-2 text-sm font-semibold text-gray-800">
-                  {book.title}
-                </h3>
-              </div>
+        {filteredBooks.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
+            {filteredBooks.slice(0, visibleCount).map((book, index) => (
+              <BookCard key={index} data={book} />
             ))}
           </div>
         ) : (
-          <p className="text-gray-600">No books available for this genre.</p>
+          <p className="text-gray-600 text-center">No books available for this genre.</p>
+        )}
+        {filteredBooks.length > 4 && filteredBooks.length > visibleCount && (
+          <div className="mt-6 flex justify-center">
+            <button
+              onClick={loadMore}
+              className="px-6 py-2 border border-orange-500 text-orange-700 rounded-full hover:bg-orange-500 hover:text-white transition-colors"
+            >
+              Load More
+            </button>
+          </div>
         )}
       </div>
     </div>
   );
 };
 
-export default Geners;
+export default Genres;
