@@ -4,7 +4,7 @@ import BookCard from './BookCard/BookCard';
 
 const Featured = () => {
   const [books, setBooks] = useState([]);
-  const [visibleCount, setVisibleCount] = useState(4);
+  const [visibleCount, setVisibleCount] = useState(8); // Default to 8 books
 
   useEffect(() => {
     const fetchAllBooks = async () => {
@@ -19,18 +19,16 @@ const Featured = () => {
     fetchAllBooks();
   }, []);
 
-  const highRatedBooks = books.filter((book) => book.rating >= 3.5);
-
-  const loadMore = () => {
-    setVisibleCount(prev => prev + 4);
-  };
+  const highRatedBooks = books.filter(book => book.rating >= 3.5);
+  const loadMore = () => setVisibleCount(prev => prev + 4);
 
   return (
-    <section className="py-10 px-4 bg-gray-50">
+    <section className="py-10 px-4">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-8 bg-gradient-to-r from-orange-500 to-orange-700 bg-clip-text text-transparent">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-center mb-8 bg-gradient-to-r from-orange-500 to-orange-700 bg-clip-text text-transparent">
           Featured Books
         </h2>
+
         {highRatedBooks.length > 0 ? (
           <>
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">

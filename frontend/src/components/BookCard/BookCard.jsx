@@ -1,34 +1,45 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaStar } from 'react-icons/fa';
+import { motion } from 'framer-motion';
 
 const BookCard = ({ data }) => {
   return (
-    <div className="bg-white rounded-xl p-4 md:p-6 hover:shadow-2xl transition transform duration-300 hover:scale-105 mx-auto">
+    <motion.div 
+      className="bg-white rounded-xl p-1 md:p-2 hover:shadow-lg transition transform duration-300 hover:scale-105 mx-auto w-full max-w-[16rem]"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <Link to={`/book/${data._id}`}>
         {/* Title and Rating Container */}
-        <div className="flex justify-between items-center mb-2">
-          <h3 className="text-base md:text-lg font-semibold text-orange-700">
+        <div className="flex justify-between items-center mb-1">
+          <h3 className="text-xs md:text-lg font-semibold text-orange-700">
             {data.title}
           </h3>
           <div className="flex items-center">
             <FaStar className="text-yellow-500 mr-1" />
-            <span className="text-sm md:text-base text-green-600">{data.rating}</span>
+            <span className="text-md md:text-xs text-green-600">{data.rating}</span>
           </div>
         </div>
         <img
           src={data.image || data.images?.[0] || 'https://via.placeholder.com/150'}
           alt={data.title}
-          className="w-full object-cover rounded-md mb-4 aspect-[3/4] max-h-72"
+          className="w-full object-cover rounded-md mb-2 aspect-[3/4] max-h-60"
         />
-        <p className="text-sm md:text-base text-gray-600 text-left">
+        <p className="text-md md:text-xs text-gray-600 text-left">
           Author: {data.author}
         </p>
-        <p className="text-sm md:text-base text-gray-600 text-left">
-          Genre: {data.genre}
-        </p>
+        <div className="flex justify-between items-center">
+          <p className="text-md md:text-xs text-gray-600">
+            Genre: {data.genre}
+          </p>
+          <p className="text-md md:text-xs text-gray-600">
+            ₹ {data.price}
+          </p>
+        </div>
       </Link>
-    </div>
+    </motion.div>
   );
 };
 

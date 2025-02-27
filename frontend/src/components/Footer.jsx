@@ -3,7 +3,7 @@ import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from 'react-icons/f
 
 const Footer = () => {
   return (
-    <footer className="bg-gradient-to-r from-gray-100 to-white text-gray-900 py-12 px-4">
+    <footer className="bg-gradient-to-r from-orange-50 to-white text-gray-900 py-12 px-4 mt-8">
       <div className="max-w-6xl mx-auto">
         {/* Top Section */}
         <div className="flex flex-col md:flex-row justify-between items-center md:items-start gap-8">
