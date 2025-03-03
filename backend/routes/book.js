@@ -100,15 +100,18 @@ router.get("/recentbooks", async (req, res) => {
 router.get("/book/:id", async (req, res) => {
   try {
     const { id } = req.params;
+    console.log("Fetching book with ID:", id);
     const book = await Book.findById(id);
     if (!book) {
+      console.log("Book not found");
       return res.status(404).json({ message: "Book not found" });
     }
     return res.status(200).json({ book });
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching book:", error);
     return res.status(500).json({ message: "Error getting book by ID", error: error.message });
   }
 });
+
 
 module.exports = router;

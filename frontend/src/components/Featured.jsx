@@ -1,54 +1,58 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import BookCard from './BookCard/BookCard';
 
 const Featured = () => {
   const [books, setBooks] = useState([]);
-  const [visibleCount, setVisibleCount] = useState(8); // Default to 8 books
+  const [visibleCount, setVisibleCount] = useState(5); // Initially show 5 books
 
   useEffect(() => {
-    const fetchAllBooks = async () => {
+    const fetchBooks = async () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/book/allbooks/`);
-        setBooks(response.data.books);
+        const highRatedBooks = response.data.books.filter(book => book.rating >= 3.5);
+        setBooks(highRatedBooks);
       } catch (error) {
         console.error("Error fetching books:", error);
       }
     };
 
-    fetchAllBooks();
+    fetchBooks();
   }, []);
 
-  const highRatedBooks = books.filter(book => book.rating >= 3.5);
-  const loadMore = () => setVisibleCount(prev => prev + 4);
+  const showMoreBooks = () => setVisibleCount(prev => prev + 5);
 
   return (
-    <section className="py-10 px-4">
-      <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-center mb-8 bg-gradient-to-r from-orange-500 to-orange-700 bg-clip-text text-transparent">
-          Featured Books
+    <section className="py-16 px-6 bg-[#F4F5DB]">
+      <div className="max-w-7xl mx-auto">
+        {/* Section Title */}
+        <h2 className="text-4xl sm:text-5xl font-medium text-start mb-12 text-[#722F37]">
+          <span className="bg-gradient-to-r from-[#722F37] to-[#94404B] bg-clip-text text-transparent">
+            FEATURED - Curated For You
+          </span>
         </h2>
 
-        {highRatedBooks.length > 0 ? (
-          <>
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
-              {highRatedBooks.slice(0, visibleCount).map((book, index) => (
-                <BookCard key={index} data={book} />
-              ))}
-            </div>
-            {highRatedBooks.length > visibleCount && (
-              <div className="mt-6 flex justify-center">
-                <button 
-                  onClick={loadMore}
-                  className="px-6 py-2 border border-orange-500 text-orange-700 rounded-full hover:bg-orange-500 hover:text-white transition-colors"
-                >
-                  Load More
-                </button>
-              </div>
-            )}
-          </>
-        ) : (
-          <p className="text-center text-gray-600">No high-rated books available.</p>
+        {/* Featured Books Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 justify-items-center">
+          {books.slice(0, visibleCount).map((book, index) => (
+            <BookCard key={index} data={book} />
+          ))}
+        </div>
+
+        {/* View More Button */}
+        {visibleCount < books.length && (
+          <div className="mt-8 flex justify-end">
+            <button
+              onClick={showMoreBooks}
+              className="px-6 py-2 border-2 border-[#722F37] border-l-4 border-b-4 text-[#722F37] rounded-sm 
+          hover:bg-[#722F37] hover:text-[#F4F5DB] 
+          hover:border-black hover:border-l-4 hover:border-b-4 
+          transition-all duration-300"
+            >
+              View More
+            </button>
+          </div>
+
         )}
       </div>
     </section>

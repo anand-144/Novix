@@ -7,9 +7,7 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: { 
     opacity: 1, 
-    transition: { 
-      staggerChildren: 0.3 
-    }
+    transition: { staggerChildren: 0.3 } 
   }
 };
 
@@ -26,28 +24,28 @@ const rightVariants = {
 const Hero = () => {
   return (
     <motion.div 
-      className="min-h-[75vh] flex flex-col md:flex-row bg-gradient-to-r from-gray-50 to-white"
+      className="relative min-h-[80vh] flex flex-col md:flex-row items-center justify-center bg-[#F4F5DB]"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
     >
       {/* Left Column */}
       <motion.div 
-        className="w-full md:w-1/2 flex flex-col justify-center px-6 py-8 md:py-0"
+        className="relative z-10 w-full md:w-1/2 flex flex-col justify-center px-8 md:px-12 py-10 md:py-0"
         variants={leftVariants}
       >
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-orange-700 text-start mb-6">
-          Unlock Your Next Epic Reading Adventure
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-[#5D0E41] leading-tight">
+          Unlock Your Next <span className="text-[#9B1B30]">Epic Reading</span> Adventure
         </h1>
-        <p className="mt-4 text-sm sm:text-base md:text-lg text-gray-600 max-w-lg">
+        <p className="mt-4 text-sm sm:text-base md:text-lg text-gray-700 max-w-lg leading-relaxed">
           Uncover the stories that captivate, inspire, and transform your perspective.
         </p>
-        <div className="mt-6">
+        <div className="mt-8">
           <Link to="/allbooks">
             <motion.button 
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.07 }}
               whileTap={{ scale: 0.95 }}
-              className="inline-block border border-orange-500 text-sm sm:text-base font-medium text-orange-700 px-6 py-3 rounded-full hover:bg-orange-500 hover:text-white transition-all duration-300 cursor-pointer"
+              className="inline-block bg-[#5D0E41] text-white text-sm sm:text-base font-semibold px-8 py-3 rounded-full shadow-lg hover:bg-[#9B1B30] transition-all duration-300"
             >
               Discover Your Next Great Book
             </motion.button>
@@ -57,13 +55,13 @@ const Hero = () => {
 
       {/* Right Column */}
       <motion.div 
-        className="w-full md:w-1/2 flex items-center justify-center p-4"
+        className="relative z-10 w-full md:w-1/2 flex items-center justify-center p-4"
         variants={rightVariants}
       >
         <motion.img
           src={hero}
           alt="Hero"
-          className="w-full h-auto max-h-[75vh] object-cover"
+          className="w-full h-auto max-h-[65vh] object-cover drop-shadow-lg rounded-lg"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, delay: 0.3 }}
