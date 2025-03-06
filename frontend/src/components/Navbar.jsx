@@ -1,25 +1,55 @@
 import React, { useState, useRef, useEffect } from "react";
 import { SiBookstack } from "react-icons/si";
-import { FaUser, FaBars, FaTimes } from "react-icons/fa";
+import { FaBars, FaTimes, FaUser } from "react-icons/fa";
 import { GiBookPile } from "react-icons/gi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { authActions } from "../store/auth"; 
+import { avatar1 } from "../assets"; // Default avatar
 
-const Navbar = ({ isAuthenticated }) => {
+const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileAvatar, setProfileAvatar] = useState(
+    localStorage.getItem("selectedAvatar") || avatar1
+  ); // ✅ Load avatar from localStorage
   const dropdownRef = useRef(null);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+
+  // ✅ Handle Logout and Redirect to Login
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("role");
+    localStorage.removeItem("selectedAvatar"); // ✅ Remove avatar on logout
+
+    setProfileAvatar(avatar1); // ✅ Reset to default avatar
+    dispatch(authActions.logout());
+    setShowDropdown(false);
+    navigate("/login");
+  };
+
+  // ✅ Restore auth state and avatar on page load
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowDropdown(false);
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+    const role = localStorage.getItem("role") || sessionStorage.getItem("role");
+    const savedAvatar = localStorage.getItem("selectedAvatar");
+
+    if (token) {
+      dispatch(authActions.login());
+      if (role) {
+        dispatch(authActions.changeRole(role));
       }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+    }
+
+    if (savedAvatar) {
+      setProfileAvatar(savedAvatar); // ✅ Set avatar from storage
+    }
+  }, [dispatch]);
 
   const links = [
     { title: "Home", link: "/" },
@@ -30,7 +60,6 @@ const Navbar = ({ isAuthenticated }) => {
 
   return (
     <>
-      {/* Sticky Glassmorphism Navbar */}
       <nav className="fixed top-0 left-0 w-full z-50 backdrop-blur-md bg-[#F4F5DB]/80 shadow-lg border-b border-gray-200 transition-all">
         <div className="flex items-center justify-between px-6 py-4">
           {/* Logo */}
@@ -41,7 +70,7 @@ const Navbar = ({ isAuthenticated }) => {
             </div>
           </Link>
 
-          {/* Desktop Centered Links */}
+          {/* Desktop Links */}
           <ul className="hidden md:flex gap-8 absolute left-1/2 transform -translate-x-1/2">
             {links.map(({ title, link }, i) => (
               <li key={i}>
@@ -69,11 +98,19 @@ const Navbar = ({ isAuthenticated }) => {
                 onClick={() => setShowDropdown(!showDropdown)}
                 className="hover:text-[#9B1B30] transition-colors text-2xl"
               >
-                <FaUser />
+                {isLoggedIn ? (
+                  <img
+                    src={profileAvatar}
+                    alt="User Avatar"
+                    className="w-10 h-10 rounded-full border-2 border-[#5D0E41] shadow-md"
+                  />
+                ) : (
+                  <FaUser className="text-2xl text-[#5D0E41]" />
+                )}
               </button>
               {showDropdown && (
                 <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white text-[#5D0E41] border border-gray-300">
-                  {isAuthenticated ? (
+                  {isLoggedIn ? (
                     <>
                       <Link
                         onClick={() => setShowDropdown(false)}
@@ -83,7 +120,7 @@ const Navbar = ({ isAuthenticated }) => {
                         My Profile
                       </Link>
                       <button
-                        onClick={() => setShowDropdown(false)}
+                        onClick={handleLogout}
                         className="w-full text-left px-4 py-2 hover:bg-red-500 hover:text-white transition"
                       >
                         Logout
@@ -91,13 +128,6 @@ const Navbar = ({ isAuthenticated }) => {
                     </>
                   ) : (
                     <>
-                      <Link
-                        onClick={() => setShowDropdown(false)}
-                        to="/profile"
-                        className="block px-4 py-2 hover:bg-[#9B1B30] hover:text-white transition"
-                      >
-                        My Profile
-                      </Link>
                       <Link
                         onClick={() => setShowDropdown(false)}
                         to="/login"

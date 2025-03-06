@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  "proxy": "http://localhost:5173",
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
@@ -25,6 +26,7 @@
     "react-router-dom": "^7.2.0",
     "react-slick": "^0.30.3",
     "react-toastify": "^11.0.5",
+    "redux": "^5.0.1",
     "slick-carousel": "^1.8.1",
     "tailwindcss": "^4.0.8"
   },

@@ -14,7 +14,7 @@ const Recommendation = () => {
         if (!token) return;
 
         // Fetch wishlist books
-        const wishlistResponse = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/wishlist/get-wishlist/`, {
+        const wishlistResponse = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/wishlist/get-wishlist/`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 

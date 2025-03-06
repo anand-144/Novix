@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Navbar, Footer } from "./components";
+import { Navbar, Footer, ForgotPassword, ResetPassword } from "./components";
 import { Home, AllBooks, Login, Contact, About, Signup, Cart } from "./pages";
 import MyProfile from "./pages/MyProfile";
 import { Routes, Route } from "react-router-dom";
@@ -32,6 +32,9 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/book/:id" element={<BookDetails />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+
       </Routes>
       <Footer />
     </div>

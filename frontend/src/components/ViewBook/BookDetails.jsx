@@ -99,7 +99,7 @@ const BookDetails = () => {
           "Content-Type": "application/json",
         },
       };
-      await axios.post(
+      await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/purchase/${book._id}`,
         { quantity: 1 },
         config
