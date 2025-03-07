@@ -8,38 +8,41 @@ import {
   avatar4,
   avatar5,
   avatar6,
-} from "../assets"; // Import local avatars
+} from "../assets"; 
+import Wishlist from "../components/profile/Whislist";
+import OrderHistory from "../components/profile/OrderHistory";
 
 const MyProfile = () => {
-  const [activeTab, setActiveTab] = useState("profile");
+  // "profile" tab will show user profile details
+  // "wishlist" remains unchanged
+  // "orders" tab will now display order history
+  const [activeTab, setActiveTab] = useState("profile"); 
   const [selectedAvatar, setSelectedAvatar] = useState(
     localStorage.getItem("selectedAvatar") || avatar1
   );
   const [showAvatars, setShowAvatars] = useState(false);
   const [confirmAvatar, setConfirmAvatar] = useState(null);
+
+  // State for user profile details (previous profile)
   const [userData, setUserData] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
 
-  // List of predefined avatars
-  const avatars = [
-    { id: 1, src: avatar1, gender: "male" },
-    { id: 2, src: avatar2, gender: "male" },
-    { id: 3, src: avatar3, gender: "male" },
-    { id: 4, src: avatar4, gender: "female" },
-    { id: 5, src: avatar5, gender: "female" },
-    { id: 6, src: avatar6, gender: "female" },
-  ];
+  // State for order history
+  const [orders, setOrders] = useState([]);
+  const [loadingOrders, setLoadingOrders] = useState(true);
 
-  // Fetch user details (console the GET data and update state)
+  // Fetch user details
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-        // console.log("Token:", token);
-        const response = await axios.get("http://localhost:3000/api/user/user-details", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        console.log("Fetched user details:", response.data);
+        const token =
+          localStorage.getItem("token") || sessionStorage.getItem("token");
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/user/user-details`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setUserData(response.data.user);
       } catch (error) {
         console.error("Error fetching user details:", error);
@@ -50,20 +53,38 @@ const MyProfile = () => {
     fetchUserDetails();
   }, []);
 
-  // Define a fallback user if no data is fetched
-  const user = userData || {
-    username: "Default User",
-    email: "default@example.com",
-    phone: "0000000000",
-    address: "Default Address",
-  };
+  // Fetch order history data
+  useEffect(() => {
+    const fetchOrderHistory = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setLoadingOrders(false);
+        return;
+      }
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/orders/history`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        // Assuming your backend returns an array of orders in response.data.orders
+        setOrders(response.data.orders || []);
+      } catch (error) {
+        console.error("Error fetching order history:", error);
+      } finally {
+        setLoadingOrders(false);
+      }
+    };
 
-  // Handle Avatar Selection Confirmation (opens confirmation modal)
+    fetchOrderHistory();
+  }, []);
+
+  // Handlers for avatar selection
   const onAvatarClick = (avatar) => {
     setConfirmAvatar(avatar);
   };
 
-  // Confirm avatar selection
   const confirmAvatarSelection = () => {
     setSelectedAvatar(confirmAvatar);
     localStorage.setItem("selectedAvatar", confirmAvatar);
@@ -72,7 +93,6 @@ const MyProfile = () => {
     console.log("Avatar updated successfully!");
   };
 
-  // Cancel avatar selection
   const cancelAvatarSelection = () => {
     setConfirmAvatar(null);
   };
@@ -103,7 +123,14 @@ const MyProfile = () => {
                   Choose an Avatar
                 </h3>
                 <div className="flex flex-wrap justify-center gap-2">
-                  {avatars.map((avatar) => (
+                  {[
+                    { id: 1, src: avatar1 },
+                    { id: 2, src: avatar2 },
+                    { id: 3, src: avatar3 },
+                    { id: 4, src: avatar4 },
+                    { id: 5, src: avatar5 },
+                    { id: 6, src: avatar6 },
+                  ].map((avatar) => (
                     <img
                       key={avatar.id}
                       src={avatar.src}
@@ -149,7 +176,7 @@ const MyProfile = () => {
                   }`}
                   onClick={() => setActiveTab("orders")}
                 >
-                  Orders
+                  Order History
                 </li>
               </ul>
             </div>
@@ -159,104 +186,72 @@ const MyProfile = () => {
           <div className="w-full md:w-2/3 p-6">
             {activeTab === "profile" && (
               <div>
-                <h2 className="text-3xl font-bold text-[#5D0E41] mb-4">My Profile</h2>
+                <h2 className="text-3xl font-bold text-[#5D0E41] mb-4">
+                  My Profile
+                </h2>
                 {loadingUser ? (
-                  <p>Loading...</p>
-                ) : (
+                  <div>Loading profile...</div>
+                ) : userData ? (
                   <div className="space-y-4 text-gray-700">
                     <div className="flex justify-between">
                       <span className="font-semibold">Name:</span>
-                      <span>{user.username}</span>
+                      <span>{userData.username}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="font-semibold">Email:</span>
-                      <span>{user.email}</span>
+                      <span>{userData.email}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="font-semibold">Phone:</span>
-                      <span>{user.phone}</span>
+                      <span>{userData.phone}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="font-semibold">Address:</span>
-                      <span>{user.address}</span>
+                      <span>{userData.address}</span>
                     </div>
                   </div>
+                ) : (
+                  <div>No profile data found.</div>
                 )}
-                <div className="mt-6 flex flex-col sm:flex-row gap-4">
-                  <button className="flex-1 bg-[#5D0E41] text-white py-2 rounded hover:bg-[#9B1B30] transition">
-                    Edit Profile
-                  </button>
-                  <button className="flex-1 border border-[#5D0E41] text-[#5D0E41] py-2 rounded hover:bg-[#5D0E41] hover:text-white transition">
-                    Change Password
-                  </button>
-                </div>
               </div>
             )}
+
             {activeTab === "wishlist" && (
               <div>
-                <h2 className="text-3xl font-bold text-[#5D0E41] mb-4">Wishlist</h2>
-                <p className="text-gray-500">No items in wishlist.</p>
+                <Wishlist />
               </div>
             )}
+
             {activeTab === "orders" && (
               <div className="max-h-96 overflow-y-auto">
-                <h2 className="text-3xl font-bold text-[#5D0E41] mb-4">Orders</h2>
-                <div>
-                  <h3 className="text-xl font-semibold text-[#5D0E41] mb-2">
-                    Ongoing Orders
-                  </h3>
+                <h2 className="text-3xl font-bold text-[#5D0E41] mb-4">
+                  Order History
+                </h2>
+                {loadingOrders ? (
+                  <div>Loading order history...</div>
+                ) : orders.length === 0 ? (
+                  <div>No order history found.</div>
+                ) : (
                   <ul className="space-y-3">
-                    {[
-                      { id: 101, product: "Rich Dad Poor Dad", status: "Shipped" },
-                      { id: 102, product: "The Lean Startup", status: "Processing" },
-                      { id: 103, product: "Sapiens", status: "Delivered" },
-                      { id: 104, product: "The Psychology of Money", status: "Processing" },
-                      { id: 105, product: "Think and Grow Rich", status: "Shipped" },
-                    ].map((order) => (
+                    {orders.map((order) => (
                       <li key={order.id} className="border p-3 rounded">
                         <div className="flex justify-between">
-                          <span className="font-semibold">{order.product}</span>
-                          <span>{order.status}</span>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="mt-6">
-                  <h3 className="text-xl font-semibold text-[#5D0E41] mb-2">
-                    Order History
-                  </h3>
-                  <ul className="space-y-3">
-                    {[
-                      { id: 201, product: "Zero to One", date: "Jan 10, 2024" },
-                      { id: 202, product: "Deep Work", date: "Feb 5, 2024" },
-                      {
-                        id: 203,
-                        product: "The Subtle Art of Not Giving a F*ck",
-                        date: "Feb 15, 2024",
-                      },
-                      {
-                        id: 204,
-                        product: "48 Laws of Power",
-                        date: "Mar 1, 2024",
-                      },
-                    ].map((order) => (
-                      <li key={order.id} className="border p-3 rounded">
-                        <div className="flex justify-between">
-                          <span className="font-semibold">{order.product}</span>
+                          <span className="font-semibold">
+                            {order.product}
+                          </span>
                           <span>{order.date}</span>
                         </div>
                       </li>
                     ))}
                   </ul>
-                </div>
+                )}
               </div>
             )}
           </div>
         </div>
       </div>
 
-      {/* Confirmation Modal */}
+      {/* Confirmation Modal for Avatar Selection */}
       {confirmAvatar && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">

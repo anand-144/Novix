@@ -100,29 +100,66 @@ const BookDetails = () => {
     }
   };
 
-  // Handle Buy Now Action
-  const handleBuyNow = async () => {
+  // Wishlist
+  const handleWishlist = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      toast.error("Please log in to buy this book.");
+      toast.error("Please log in to add to wishlist.");
+      return;
+    }
+    if (!id) {
+      toast.error("Book ID is missing.");
+      return;
+    }
+
+    try {
+      const response = await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/wishlist/add-wishlist`,
+        null,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            bookid: id,
+          },
+        }
+      );
+
+      toast.success("Book added to wishlist!");
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error adding to wishlist:", error);
+      toast.error(
+        error.response?.data?.message || "Error adding to wishlist."
+      );
+    }
+  };
+
+  // Cart
+  const handleCart = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Please log in to add to cart.");
       return;
     }
     try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      };
-      await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/purchase/${book._id}`,
-        { quantity: 1 },
-        config
+      const response = await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/cart/add-to-cart`,
+        null,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            bookid: id,
+          },
+        }
       );
-      toast.success("Purchase successful!");
+
+      toast.success("Book added to cart!");
+      console.log(response.data);
     } catch (error) {
-      console.error("Error purchasing book:", error);
-      toast.error("Error purchasing book.");
+      console.error("Error adding to cart:", error);
+      toast.error(
+        error.response?.data?.message || "Error adding to cart."
+      );
     }
   };
 
@@ -141,7 +178,6 @@ const BookDetails = () => {
       </div>
     );
   }
-
   return (
     <div className="overflow-x-hidden bg-[#F4F5DB] min-h-screen">
       <div className="container mx-auto p-6 pt-24">
@@ -152,16 +188,24 @@ const BookDetails = () => {
           {/* Left: Book Image */}
           <div className="w-full lg:w-1/3 flex flex-col gap-4 lg:sticky lg:top-24">
             <div className="border border-[#5D0E41] border-l-4 border-b-4 p-2 rounded-md relative">
-              <img src={selectedImage} alt={book.title} className="w-full object-contain rounded-md max-h-[350px]" />
+              <img
+                src={selectedImage}
+                alt={book.title}
+                className="w-full object-contain rounded-md max-h-[350px]"
+              />
 
-              {/* Wishlist Icon for User */}
+              {console.log("User Role:", role)}
+
+              {/* Icons based on user role */}
               {isLoggedIn && role === "user" && (
-                <button className="absolute top-2 right-2 text-red-500 text-2xl">
+                <button
+                  className="absolute top-2 right-2 text-red-500 text-2xl"
+                  onClick={handleWishlist}
+                >
                   <FaHeart />
                 </button>
               )}
 
-              {/* Admin Icons */}
               {isLoggedIn && role === "admin" && (
                 <div className="absolute top-2 right-2 flex gap-2">
                   <button className="text-blue-500 text-2xl">
@@ -177,32 +221,63 @@ const BookDetails = () => {
 
           {/* Right: Book Details */}
           <div className="w-full lg:w-2/3">
-            <h1 className="text-4xl md:text-5xl font-bold text-[#5D0E41]">{book.title}</h1>
+            <h1 className="text-4xl md:text-5xl font-bold text-[#5D0E41]">
+              {book.title}
+            </h1>
             <p className="text-lg md:text-xl text-gray-700 mt-2">
               By <span className="font-semibold">{book.author}</span>
             </p>
 
             <div className="mt-4 space-y-2">
-              <p className="text-lg text-gray-700">Publisher: {book.publisher}</p>
-              <p className="text-lg text-gray-700">Price: <span className="font-bold">${book.price}</span></p>
+              <p className="text-lg text-gray-700">
+                Publisher: {book.publisher}
+              </p>
+              <p className="text-lg text-gray-700">
+                Publisher: {book.description}
+              </p>
+              <p className="text-lg text-gray-700">
+                Price: <span className="font-bold">${book.price}</span>
+              </p>
               <p className="text-lg text-gray-700">Stock: {book.stock}</p>
-              <p className="text-lg text-gray-700">Average Rating: {averageRating.toFixed(1)} / 5</p>
+              <p className="text-lg text-gray-700">
+                Average Rating: {averageRating.toFixed(1)} / 5
+              </p>
             </div>
 
-            <button onClick={handleBuyNow} className="mt-6 px-6 py-3 bg-[#5D0E41] text-white rounded-md">
-              Buy Me
-            </button>
+            {/* Button for Add to Cart */}
+            <div className="mt-6">
+              <button
+                onClick={handleCart}
+                className="px-6 py-3 bg-[#5D0E41] text-white rounded-md"
+              >
+                Add to Cart
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Review Writing Section */}
         {isLoggedIn && (
-          <form onSubmit={handleReviewSubmit} className="max-w-lg mx-auto mt-6 bg-white p-4 rounded-lg shadow-md">
-            <h3 className="text-lg font-semibold text-[#5D0E41]">Write a Review</h3>
-            <textarea className="w-full mt-2 p-2 border rounded-md" placeholder="Write your review..."
-              value={reviewComment} onChange={(e) => setReviewComment(e.target.value)} required
+          <form
+            onSubmit={handleReviewSubmit}
+            className="max-w-lg mx-auto mt-6 bg-white p-4 rounded-lg shadow-md"
+          >
+            <h3 className="text-lg font-semibold text-[#5D0E41]">
+              Write a Review
+            </h3>
+            <textarea
+              className="w-full mt-2 p-2 border rounded-md"
+              placeholder="Write your review..."
+              value={reviewComment}
+              onChange={(e) => setReviewComment(e.target.value)}
+              required
             />
-            <button type="submit" className="mt-4 px-4 py-2 bg-[#5D0E41] text-white rounded-md">Submit Review</button>
+            <button
+              type="submit"
+              className="mt-4 px-4 py-2 bg-[#5D0E41] text-white rounded-md"
+            >
+              Submit Review
+            </button>
           </form>
         )}
 
