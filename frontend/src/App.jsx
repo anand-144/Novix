@@ -5,6 +5,7 @@ import MyProfile from "./pages/MyProfile";
 import { Routes, Route } from "react-router-dom";
 import Loader from "./components/Loader/Loader";
 import BookDetails from "./components/ViewBook/BookDetails";
+import Whislist from "./components/profile/Whislist";
 
 const App = () => {
   const [loading, setLoading] = useState(true);
@@ -27,7 +28,9 @@ const App = () => {
         <Route path="/allbooks" element={<AllBooks />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/profile" element={<MyProfile />} />
+        <Route path="/profile" element={<MyProfile />} >
+          <Route index element = {<Whislist />} />
+         </Route> 
         <Route path="/cart" element={<Cart />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />

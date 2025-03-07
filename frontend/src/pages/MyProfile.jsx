@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { FaUser, FaHeart, FaBox, FaUserEdit, FaLock } from "react-icons/fa";
 import {
   avatar1,
@@ -16,6 +17,8 @@ const MyProfile = () => {
   );
   const [showAvatars, setShowAvatars] = useState(false);
   const [confirmAvatar, setConfirmAvatar] = useState(null);
+  const [userData, setUserData] = useState(null);
+  const [loadingUser, setLoadingUser] = useState(true);
 
   // List of predefined avatars
   const avatars = [
@@ -27,7 +30,35 @@ const MyProfile = () => {
     { id: 6, src: avatar6, gender: "female" },
   ];
 
-  // When user clicks an avatar, set it to confirm
+  // Fetch user details (console the GET data and update state)
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+        // console.log("Token:", token);
+        const response = await axios.get("http://localhost:3000/api/user/user-details", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log("Fetched user details:", response.data);
+        setUserData(response.data.user);
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+      } finally {
+        setLoadingUser(false);
+      }
+    };
+    fetchUserDetails();
+  }, []);
+
+  // Define a fallback user if no data is fetched
+  const user = userData || {
+    username: "Default User",
+    email: "default@example.com",
+    phone: "0000000000",
+    address: "Default Address",
+  };
+
+  // Handle Avatar Selection Confirmation (opens confirmation modal)
   const onAvatarClick = (avatar) => {
     setConfirmAvatar(avatar);
   };
@@ -38,7 +69,7 @@ const MyProfile = () => {
     localStorage.setItem("selectedAvatar", confirmAvatar);
     setConfirmAvatar(null);
     setShowAvatars(false);
-    // Optionally add additional UI feedback (e.g. toast)
+    console.log("Avatar updated successfully!");
   };
 
   // Cancel avatar selection
@@ -128,27 +159,29 @@ const MyProfile = () => {
           <div className="w-full md:w-2/3 p-6">
             {activeTab === "profile" && (
               <div>
-                <h2 className="text-3xl font-bold text-[#5D0E41] mb-4">
-                  My Profile
-                </h2>
-                <div className="space-y-4 text-gray-700">
-                  <div className="flex justify-between">
-                    <span className="font-semibold">Name:</span>
-                    <span>Anand Singh</span>
+                <h2 className="text-3xl font-bold text-[#5D0E41] mb-4">My Profile</h2>
+                {loadingUser ? (
+                  <p>Loading...</p>
+                ) : (
+                  <div className="space-y-4 text-gray-700">
+                    <div className="flex justify-between">
+                      <span className="font-semibold">Name:</span>
+                      <span>{user.username}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-semibold">Email:</span>
+                      <span>{user.email}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-semibold">Phone:</span>
+                      <span>{user.phone}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-semibold">Address:</span>
+                      <span>{user.address}</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="font-semibold">Email:</span>
-                    <span>anandsingh14442@gmail.com</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-semibold">Phone:</span>
-                    <span>8424861660</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-semibold">Address:</span>
-                    <span>Sudarshan villa, Row house No: A-60, Kalamboli</span>
-                  </div>
-                </div>
+                )}
                 <div className="mt-6 flex flex-col sm:flex-row gap-4">
                   <button className="flex-1 bg-[#5D0E41] text-white py-2 rounded hover:bg-[#9B1B30] transition">
                     Edit Profile
