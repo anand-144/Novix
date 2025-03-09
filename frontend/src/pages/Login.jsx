@@ -13,44 +13,85 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const dispatch = useDispatch(); // ✅ Redux dispatch
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Function to fetch user details using the token
+  const fetchUserDetails = async (token) => {
+    try {
+      const detailsRes = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/user/user-details`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        }
+      );
+      if (
+        detailsRes.data &&
+        detailsRes.data.user &&
+        detailsRes.data.user.email
+      ) {
+        return detailsRes.data.user.email;
+      }
+    } catch (err) {
+      console.error("Error fetching user details", err);
+    }
+    return null;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-  
+
     try {
+      // Make the login request
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/user/login/`,
         formData,
         { headers: { "Content-Type": "application/json" } }
       );
       const data = response.data;
-  
+
       if (response.status === 200) {
-        // ✅ Always store token in localStorage for page refresh persistence
+        // Store token and role
         localStorage.setItem("token", data.token);
         localStorage.setItem("role", data.role);
-  
-        // ✅ If "Remember Me" is NOT checked, also store token in sessionStorage (clears on browser close)
+
+        // Attempt to retrieve the email from the login response
+        let userEmail = data.email;
+        // If email is not returned in the login response, fetch it from user-details
+        if (!userEmail) {
+          userEmail = await fetchUserDetails(data.token);
+        }
+        if (userEmail) {
+          localStorage.setItem("email", userEmail);
+        } else {
+          toast.error("Could not retrieve user email.");
+          setLoading(false);
+          return;
+        }
+
+        // Also store in sessionStorage if "Remember Me" is not checked
         if (!rememberMe) {
           sessionStorage.setItem("token", data.token);
           sessionStorage.setItem("role", data.role);
+          sessionStorage.setItem("email", userEmail);
         }
-  
-        // ✅ Update Redux state
+
+        // Update Redux state
         dispatch(authActions.login());
         dispatch(authActions.changeRole(data.role));
-  
+
         toast.success("Login successful!");
-  
-        // ✅ Redirect based on role
+
+        // Redirect to contact form (or admin dashboard if applicable)
         setTimeout(() => {
-          navigate(data.role === "admin" ? "/admin-dashboard" : "/");
+          navigate(data.role === "admin" ? "/admin-dashboard" : "/contact");
         }, 1500);
       }
     } catch (error) {
@@ -59,7 +100,6 @@ const Login = () => {
       setLoading(false);
     }
   };
-  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F4F5DB] px-4">

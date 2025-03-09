@@ -3,6 +3,8 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { authActions } from "../store/auth";
 import "react-toastify/dist/ReactToastify.css";
 
 const Signup = () => {
@@ -16,39 +18,96 @@ const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  // Handle Input Changes
+  // Function to fetch user details using the token
+  const fetchUserDetails = async (token) => {
+    try {
+      const detailsRes = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/user/user-details`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        }
+      );
+      if (
+        detailsRes.data &&
+        detailsRes.data.user &&
+        detailsRes.data.user.email
+      ) {
+        return detailsRes.data.user.email;
+      }
+    } catch (err) {
+      console.error("Error fetching user details", err);
+    }
+    return null;
+  };
+
+  // Handle input changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle Signup Submit
+  // Handle signup submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Submitting:", formData); // Debugging: Check form data
   
-    if (!formData.username || !formData.email || !formData.phone || !formData.address || !formData.password) {
+    if (
+      !formData.username ||
+      !formData.email ||
+      !formData.phone ||
+      !formData.address ||
+      !formData.password
+    ) {
       toast.error("Please fill in all fields");
       return;
     }
   
     try {
       setLoading(true);
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/user/signup`, formData, {
-        headers: { "Content-Type": "application/json" },
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/user/signup`,
+        formData,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
   
       console.log("Signup Success:", response.data); // Debugging
-  
-      // ✅ Ensure response contains `role`
-      const { token, role } = response.data;
+
+      // Extract data from the response
+      const data = response.data;
+      const { token, role } = data;
       if (!token || !role) {
         throw new Error("Signup response is missing token or role");
       }
+
+      // Get email: if not returned in the response, fetch it via token
+      let userEmail = data.email;
+      if (!userEmail) {
+        userEmail = await fetchUserDetails(token);
+      }
+      if (userEmail) {
+        localStorage.setItem("email", userEmail);
+        sessionStorage.setItem("email", userEmail);
+      } else {
+        toast.error("Could not retrieve user email.");
+        setLoading(false);
+        return;
+      }
   
-      // ✅ Store token & role before navigating
+      // Store token & role before navigating
       localStorage.setItem("token", token);
       localStorage.setItem("role", role);
+      sessionStorage.setItem("token", token);
+      sessionStorage.setItem("role", role);
+  
+      // Update Redux auth state so the navbar updates immediately
+      dispatch(authActions.login());
+      dispatch(authActions.changeRole(role));
   
       toast.success("Signup successful! Redirecting...");
   
@@ -64,8 +123,6 @@ const Signup = () => {
     }
   };
   
-  
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F4F5DB] px-4 py-4 mt-9">
       <ToastContainer />
@@ -73,7 +130,7 @@ const Signup = () => {
         <h2 className="text-2xl sm:text-3xl font-bold text-center text-[#5D0E41]">
           Sign Up
         </h2>
-
+  
         <form className="mt-4 space-y-3" onSubmit={handleSubmit}>
           {/* Username */}
           <div>
@@ -88,7 +145,7 @@ const Signup = () => {
               required
             />
           </div>
-
+  
           {/* Email */}
           <div>
             <label className="block text-gray-700 text-sm sm:text-base">Email</label>
@@ -102,7 +159,7 @@ const Signup = () => {
               required
             />
           </div>
-
+  
           {/* Phone */}
           <div>
             <label className="block text-gray-700 text-sm sm:text-base">Phone</label>
@@ -116,7 +173,7 @@ const Signup = () => {
               required
             />
           </div>
-
+  
           {/* Address */}
           <div>
             <label className="block text-gray-700 text-sm sm:text-base">Address</label>
@@ -130,7 +187,7 @@ const Signup = () => {
               required
             />
           </div>
-
+  
           {/* Password */}
           <div className="relative">
             <label className="block text-gray-700 text-sm sm:text-base">Password</label>
@@ -151,7 +208,7 @@ const Signup = () => {
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
-
+  
           <button
             type="submit"
             className="w-full bg-[#5D0E41] text-white py-2 rounded-md hover:bg-[#9B1B30] transition"
@@ -160,7 +217,7 @@ const Signup = () => {
             {loading ? "Signing Up..." : "Sign Up"}
           </button>
         </form>
-
+  
         {/* Redirect to Login */}
         <p className="mt-4 text-center text-gray-700 text-sm sm:text-base">
           Already have an account?{" "}

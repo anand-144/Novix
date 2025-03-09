@@ -39,17 +39,38 @@ router.post("/signup", async (req, res) => {
       }
     }
 
-    // Remove manual password hashing. Pass plaintext password.
+    // Create new user. (Password will be hashed by the pre-save hook.)
     const newUser = new User({
       username,
       email,
-      password, // This is plaintext; the pre-save hook will hash it.
+      password, 
       address,
       phone,
     });
     await newUser.save();
 
-    return res.status(201).json({ message: "User created successfully", user: newUser });
+    // Generate a JWT token for immediate authentication.
+    const token = jwt.sign(
+      { id: newUser._id, role: newUser.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    // Return token, role, and a success message.
+    return res.status(201).json({ 
+      message: "User created successfully", 
+      token, 
+      role: newUser.role,
+      // Optionally, send user details (omit sensitive fields like password)
+      user: {
+        id: newUser._id,
+        username: newUser.username,
+        email: newUser.email,
+        address: newUser.address,
+        phone: newUser.phone,
+        role: newUser.role
+      }
+    });
   } catch (error) {
     console.error("Signup error:", error);
     return res.status(500).json({ message: "Error signing up", error: error.message });

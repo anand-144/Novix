@@ -27,7 +27,9 @@ const authSlice = createSlice({
       localStorage.removeItem("token");
       localStorage.removeItem("role");
       sessionStorage.removeItem("token");
-      sessionStorage.removeItem("role");
+      sessionStorage.removeItem("role"); 
+      localStorage.removeItem("email");
+      sessionStorage.removeItem("email");
     },
     changeRole(state, action) {
       state.role = action.payload || "user"; // ✅ Prevents undefined role
