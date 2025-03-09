@@ -18,20 +18,28 @@ const Recommendation = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
 
-        const wishlistBooks = wishlistResponse.data.books;
+        const wishlistBooks = wishlistResponse.data.data || [];
         setWishlistBooks(wishlistBooks);
 
-        if (wishlistBooks.length > 0) {
-          // Extract unique genres from wishlist
-          const genres = [...new Set(wishlistBooks.map(book => book.genre))];
-
-          // Fetch recommended books based on these genres
-          const recommendedResponse = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/book/allbooks/`);
-          const recommendedBooks = recommendedResponse.data.books.filter(book => genres.includes(book.genre));
-
-          setRecommendedBooks(recommendedBooks);
+        if (wishlistBooks.length === 0) {
+          setLoading(false);
+          return;
         }
 
+        // Extract unique genres from wishlist
+        const wishlistGenres = [...new Set(wishlistBooks.map(book => book.genre))];
+
+        // Fetch all books
+        const allBooksResponse = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/book/allbooks/`);
+        const allBooks = allBooksResponse.data.books || [];
+
+        // Filter books that match wishlist genres but are NOT already in the wishlist
+        const recommendedBooks = allBooks.filter(book => 
+          wishlistGenres.includes(book.genre) && 
+          !wishlistBooks.some(wishlistBook => wishlistBook._id === book._id)
+        );
+
+        setRecommendedBooks(recommendedBooks);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching recommended books:", error);
@@ -51,7 +59,9 @@ const Recommendation = () => {
           </span>
         </h2>
 
-        {recommendedBooks.length > 0 ? (
+        {loading ? (
+          <p className="text-center text-gray-700 text-lg">Loading recommendations...</p>
+        ) : recommendedBooks.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
             {recommendedBooks.map((book, index) => (
               <BookCard key={index} data={book} />

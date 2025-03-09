@@ -12,8 +12,15 @@ const userSchema = new mongoose.Schema(
     avatar: { type: String, default: "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png" },
     role: { type: String, default: "user", enum: ["user", "admin"] },
     wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Book" }],
-    cart: [{ type: mongoose.Schema.Types.ObjectId, ref: "Book" }],
+    cart: [
+      {
+        bookId: { type: mongoose.Schema.Types.ObjectId, ref: "Book" },
+        quantity: { type: Number, default: 1 }
+      }
+    ], // ✅ Missing comma added here
+    
     orders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
+    
     // New fields for password reset
     resetToken: { type: String },
     resetTokenExpiration: { type: Date },
