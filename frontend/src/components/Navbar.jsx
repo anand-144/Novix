@@ -4,6 +4,7 @@ import { HiMiniBars3CenterLeft } from "react-icons/hi2";
 import { IoMdSearch } from "react-icons/io";
 import { FaRegUser , FaRegHeart } from "react-icons/fa6";
 import { HiOutlineShoppingCart } from "react-icons/hi";
+import logo from '../assets/logo.png'
 
 import avatarImg from "../assets/avatar.png";
 
@@ -16,7 +17,7 @@ const navigation = [
 
 const Navbar = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const currentUser = true;
+    const currentUser = false;
 
     return (
         <header className="max-w-screen-2xl mx-auto px-6 md:px-12 py-4 md:py-6">
@@ -24,7 +25,7 @@ const Navbar = () => {
                 {/* Logo and Title */}
                 <div className="flex items-center gap-6 md:gap-20">
                     <Link to="/">
-                        <HiMiniBars3CenterLeft className="size-6" />
+                        <img src={logo} alt="" className='h-10'/>
                     </Link>
 
                     {/* Search input */}
