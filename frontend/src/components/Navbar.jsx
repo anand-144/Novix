@@ -19,10 +19,10 @@ const Navbar = () => {
     const currentUser = true;
 
     return (
-        <header className="max-w-screen-2xl mx-auto px-4 py-4 md:py-6">
+        <header className="max-w-screen-2xl mx-auto px-6 md:px-12 py-4 md:py-6">
             <nav className="flex justify-between items-center">
                 {/* Logo and Title */}
-                <div className="flex items-center gap-4 md:gap-16">
+                <div className="flex items-center gap-6 md:gap-20">
                     <Link to="/">
                         <HiMiniBars3CenterLeft className="size-6" />
                     </Link>
@@ -39,7 +39,7 @@ const Navbar = () => {
                 </div>
 
                 {/* Right Side */}
-                <div className="relative flex items-center space-x-2 md:space-x-3">
+                <div className="relative flex items-center space-x-4 md:space-x-6">
                     <div>
                         {currentUser ? (
                             <div className="relative">
@@ -52,7 +52,8 @@ const Navbar = () => {
                                     <div className="absolute right-0 mt-2 w-48 bg-primary shadow-md rounded-md z-40 font-medium">
                                         <ul className="py-2">
                                             {navigation.map((item) => (
-                                                <li key={item.name} className="px-4 py-2 hover:bg-yellow-200 block text-sm ">
+                                                <li key={item.name} className="px-4 py-2 hover:bg-yellow-200 block text-sm" onClick={() =>
+                                                    setIsDropdownOpen(false)}>
                                                     <Link to={item.href}>{item.name}</Link>
                                                 </li>
                                             ))}
@@ -71,7 +72,7 @@ const Navbar = () => {
                         <FaRegHeart className="size-6" />
                     </button>
 
-                    <Link to="/cart" className="bg-primary p-1 px-2 sm:px-4 flex items-center rounded-sm">
+                    <Link to="/cart" className="bg-primary p-1 px-3 sm:px-5 flex items-center rounded-sm">
                         <HiOutlineShoppingCart className="size-6" />
                         <span className="text-sm font-semibold sm:ml-1">0</span>
                     </Link>
