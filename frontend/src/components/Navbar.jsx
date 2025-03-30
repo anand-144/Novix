@@ -21,7 +21,7 @@ const Navbar = () => {
     const cartItems = useSelector(state => state.cart.cartItems)
     console.log(cartItems)
 
-    const currentUser = false;
+    const currentUser = true;
 
     return (
         <header className="max-w-screen-2xl mx-auto px-6 md:px-12 py-4 md:py-6">
