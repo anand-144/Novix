@@ -8,6 +8,7 @@ import logo from '../assets/logo.png'
 
 import avatarImg from "../assets/avatar.png";
 import { useSelector } from 'react-redux';
+import { useAuth } from '../context/AuthContext';
 
 const navigation = [
     { name: "Dashboard", href: "/dashboard" },
@@ -21,7 +22,11 @@ const Navbar = () => {
     const cartItems = useSelector(state => state.cart.cartItems)
     console.log(cartItems)
 
-    const currentUser = true;
+    const {currentUser , logout} = useAuth();
+
+    const handelLogOut = () => {
+        logout()
+    }
 
     return (
         <header className="max-w-screen-2xl mx-auto px-6 md:px-12 py-4 md:py-6">
@@ -57,11 +62,20 @@ const Navbar = () => {
                                     <div className="absolute right-0 mt-2 w-48 bg-primary shadow-md rounded-md z-40 font-medium">
                                         <ul className="py-2">
                                             {navigation.map((item) => (
-                                                <li key={item.name} className="px-4 py-2 hover:bg-yellow-200 block text-sm" onClick={() =>
+                                                <li key={item.name}  onClick={() =>
                                                     setIsDropdownOpen(false)}>
-                                                    <Link to={item.href}>{item.name}</Link>
+                                                    <Link to={item.href}
+                                                        className="px-4 py-2 hover:bg-yellow-200 block text-sm"
+                                                    >
+                                                    {item.name}</Link>
                                                 </li>
-                                            ))}
+                                            ))
+                                        }
+                                        <li>
+                                            <button
+                                            onClick={handelLogOut}
+                                            className="w-full text-left px-4 py-2 hover:bg-yellow-200 block text-sm">Logout</button>
+                                        </li>
                                         </ul>
                                     </div>
                                 )}

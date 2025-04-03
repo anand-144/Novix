@@ -1,12 +1,18 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form';
-import { FaEye } from 'react-icons/fa';
+import { FaEye  ,FaEyeSlash } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
+import { useAuth } from '../context/AuthContext';
 
 const Register = () => {
 
   const [message, setMessage] = useState("");
+  const { registerUser  , signInWithGoogle} = useAuth();
+  const navigate  = useNavigate()
+
+  console.log(registerUser)
+
   const [showPassword, setShowPassword] = useState(false);
   const {
     register,
@@ -14,10 +20,33 @@ const Register = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => console.log(data);
+  //register user
 
-  const handleGoogleSignIn = () => {
+  const onSubmit = async (data) => {
+    try {
+      await registerUser(data.email, data.password);
+      alert("User Registered Successfully");
+      navigate("/login")
+    } catch (error) {
+      if (error.code === "auth/weak-password") {
+        setMessage("Password should be at least 6 characters.");
+      } else {
+        setMessage("Please provide a valid email and password.");
+      }
+      console.log(error);
+    }
+  };
+  
 
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+      alert("Registration Successful!");
+      navigate("/")
+  } catch (error) {
+    alert("Google registration is failed !")
+    console.log(error)
+  }
   }
 
   return (
