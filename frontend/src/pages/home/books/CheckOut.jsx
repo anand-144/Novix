@@ -1,51 +1,79 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useCreateOrderMutation } from '../../../redux/orders/ordersApi';
+import { clearCart } from '../../../redux/features/cart/cartSlice';
 
 const CheckOut = () => {
     const cartItems = useSelector(state => state.cart.cartItems);
     const totalPrice = cartItems.reduce((acc, item) => acc + item.newPrice, 0).toFixed(2);
-    const { currentUser } = useAuth() // Replace with actual user authentication logic
+    const { currentUser } = useAuth();
+    const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY;
 
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [isChecked, setIsChecked] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState('COD');
 
-    const onSubmit = (data) => {
-        const newOrder = {
-            name: data.name,
-            email: currentUser?.email,
-            address: {
-                city: data.city,
-                country: data.country,
-                state: data.state,
-                zipcode: data.zipcode
-            },
-            phone: data.phone,
-            productIds: cartItems.map(item => item?._id),
-            totalPrice,
-            paymentMethod,
-        };
-        console.log(newOrder);
-        
-        if (paymentMethod === 'Razorpay') {
-            handleRazorpayPayment(newOrder);
-        } else {
-            alert("Order placed successfully with Cash on Delivery.");
-        }
+    const [createOrder, { isLoading, error }] = useCreateOrderMutation();
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+  const onSubmit = async (data) => {
+    if (totalPrice <= 0 || cartItems.length === 0) {
+        toast.error("🛒 Your cart is empty.");
+        return;
+    }
+
+    const newOrder = {
+        name: data.name,
+        email: currentUser?.email,
+        address: {
+            street: data.street,
+            city: data.city,
+            country: data.country,
+            state: data.state,
+            zipcode: data.zipcode
+        },
+        phone: data.phone,
+        productIds: cartItems.map(item => item?._id),
+        totalPrice,
+        paymentMethod,
     };
+
+    try {
+        await createOrder(newOrder).unwrap();
+        dispatch(clearCart());
+        navigate('/orders');
+    } catch (error) {
+        toast.error("Error placing order. Please try again.");
+        console.error("⚠️ Order Error:", error); 
+        return;
+    }
+
+    if (paymentMethod === 'Razorpay') {
+        handleRazorpayPayment(newOrder);
+    } else {
+        toast.success("✅ Order placed successfully with Cash on Delivery.");
+        console.log("🧾 Order placed via COD:", newOrder);
+    }
+};
+
 
     const handleRazorpayPayment = (order) => {
         const options = {
-            key: "rzp_test_YourKeyHere", // Replace with Razorpay Key
-            amount: order.totalPrice * 100, // Convert to paise
+            key: razorpayKey,
+            amount: parseFloat(order.totalPrice) * 100,
             currency: "INR",
-            name: "Your Store Name",
-            description: "Order Payment",
+            name: "Novix",
+            description: "Test Payment",
             handler: function (response) {
-                alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
+                toast.success("💳 Payment successful! ID: " + response.razorpay_payment_id);
+                console.log("✅ Razorpay Payment Success:", response);
+                console.log("🧾 Order Details:", order);
             },
             prefill: {
                 name: order.name,
@@ -56,10 +84,17 @@ const CheckOut = () => {
                 color: "#3399cc"
             }
         };
-        const rzp = new window.Razorpay(options);
-        rzp.open();
+
+        try {
+            const rzp = new window.Razorpay(options);
+            rzp.open();
+        } catch (error) {
+            toast.error("❌ Razorpay payment failed.");
+            console.error("⚠️ Razorpay Error:", error);
+        }
     };
 
+    if(isLoading) return <div>Loading....</div>
     return (
         <div className="min-h-screen p-6 bg-gray-100 flex items-center justify-center">
             <div className="container max-w-screen-lg mx-auto">
@@ -86,6 +121,10 @@ const CheckOut = () => {
                                     <div className="md:col-span-5">
                                         <label>Phone Number</label>
                                         <input {...register("phone", { required: true })} type="number" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" />
+                                    </div>
+                                    <div className="md:col-span-5">
+                                        <label>Address/Street</label>
+                                        <input {...register("street", { required: true })} type="text" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" />
                                     </div>
                                     <div className="md:col-span-3">
                                         <label>City</label>
@@ -117,7 +156,9 @@ const CheckOut = () => {
                                         </div>
                                     </div>
                                     <div className="md:col-span-5 text-right">
-                                        <button disabled={!isChecked} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Place Order</button>
+                                        <button disabled={!isChecked} className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ${!isChecked && 'opacity-50 cursor-not-allowed'}`}>
+                                            Place Order
+                                        </button>
                                     </div>
                                 </div>
                             </div>

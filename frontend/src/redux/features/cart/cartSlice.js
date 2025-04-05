@@ -13,7 +13,7 @@ const cartSlice = createSlice({
         addToCart: (state, action) => {
             const existingItem = state.cartItems.find(item => item._id === action.payload._id);
             if (!existingItem) {
-                state.cartItems.push(action.payload);
+                state.cartItems.push({ ...action.payload, quantity: action.payload.quantity || 1 });
                 Swal.fire({
                     title: "Great!",
                     html: "<b>Book Added To Cart</b>",
@@ -24,39 +24,44 @@ const cartSlice = createSlice({
                     imageAlt: "Custom image",
                     timer: 1500,
                     showConfirmButton: false,
-                    background: "rgba(80, 200, 120, 0.8)" // Emerald color with 80% opacity
+                    background: "rgba(80, 200, 120, 0.8)"
                 });
-                
-                                
-
-
-
             } else {
+                existingItem.quantity += 1;
                 Swal.fire({
-                    title: "Already Added To The Cart",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#3085d6",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "OK!",
-                    background: "rgba(241, 130, 141, 0.4)"
-                  });
-                  
+                    title: "Quantity Updated!",
+                    html: "<b>Book quantity increased</b>",
+                    icon: "success",
+                    timer: 1500,
+                    showConfirmButton: false,
+                    background: "rgba(80, 200, 120, 0.8)"
+                });
             }
         },
 
-        removeFromCart: (state , action) => {
-            state.cartItems = state.cartItems.filter(item => item._id !== action.payload._id)
+        increaseQuantity: (state, action) => {
+            const item = state.cartItems.find(item => item._id === action.payload._id);
+            if (item) {
+                item.quantity += 1;
+            }
+        },
+
+        decreaseQuantity: (state, action) => {
+            const item = state.cartItems.find(item => item._id === action.payload._id);
+            if (item && item.quantity > 1) {
+                item.quantity -= 1;
+            }
+        },
+
+        removeFromCart: (state, action) => {
+            state.cartItems = state.cartItems.filter(item => item._id !== action.payload._id);
         },
 
         clearCart: (state) => {
-            state.cartItems = []
+            state.cartItems = [];
         }
-
     }
 });
 
-
-
-export const { addToCart , removeFromCart, clearCart } = cartSlice.actions;
+export const { addToCart, removeFromCart, clearCart, increaseQuantity, decreaseQuantity } = cartSlice.actions;
 export default cartSlice.reducer;
