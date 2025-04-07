@@ -8,6 +8,10 @@ import logo from '../assets/logo.png';
 import avatarImg from "../assets/avatar.png";
 import { useSelector } from 'react-redux';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { useFetchAllBooksQuery } from '../redux/features/books/booksApi'; // make sure this exists
+
+
 
 const navigation = [
     { name: "Dashboard", href: "/dashboard" },
@@ -43,6 +47,31 @@ const Navbar = () => {
         };
     }, [isDropdownOpen]);
 
+    const [searchTerm, setSearchTerm] = useState("");
+    const { data: allBooks = [] } = useFetchAllBooksQuery();
+    const navigate = useNavigate();
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        const keyword = searchTerm.trim().toLowerCase();
+
+        const results = allBooks.filter((book) => {
+            const title = book.title?.toLowerCase() || "";
+            const author = book.author?.toLowerCase() || "";
+            const category = book.category?.toLowerCase() || "";
+
+            return (
+                title.includes(keyword) ||
+                author.includes(keyword) ||
+                category.includes(keyword)
+            );
+        });
+
+        navigate("/search", { state: { results, keyword: searchTerm } });
+    };
+
+
+
     return (
         <header className="max-w-screen-2xl mx-auto px-6 md:px-12 py-4 md:py-6">
             <nav className="flex justify-between items-center">
@@ -51,14 +80,20 @@ const Navbar = () => {
                     <Link to="/">
                         <img src={logo} alt="logo" className="h-10" />
                     </Link>
-                    <div className="relative w-32 sm:w-48 md:w-72">
-                        <IoMdSearch className="absolute left-3 top-1/2 -translate-y-1/2" />
+                    <form onSubmit={handleSearch} className="relative w-32 sm:w-48 md:w-72">
+                        <button type="submit" className="absolute left-3 top-1/2 -translate-y-1/2">
+                            <IoMdSearch />
+                        </button>
                         <input
                             type="text"
-                            placeholder="Search Here"
+                            placeholder="Find a book..."
+                            autoComplete="off"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                             className="bg-[#EAEAEA] w-full py-1 pl-8 pr-2 rounded-md focus:outline-none"
                         />
-                    </div>
+                    </form>
+
                 </div>
 
                 {/* Right Side */}
