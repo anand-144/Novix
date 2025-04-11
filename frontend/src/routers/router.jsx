@@ -2,12 +2,18 @@ import { createBrowserRouter } from "react-router";
 import App from "../App";
 import Home from "../pages/home/Home";
 import {Login, Register} from "../components";
-import Cart from "../pages/home/books/Cart";
-import CheckOut from "../pages/home/books/CheckOut";
-import SingleBooks from "../pages/home/books/SingleBooks";
+import Cart from "../pages/books/Cart";
+import CheckOut from "../pages/books/CheckOut";
+import SingleBooks from "../pages/books/SingleBooks";
 import PrivateRoute from "./PrivateRoute";
-import Order from "../pages/home/books/OrderPage"
+import Order from "../pages/books/OrderPage"
 import SearchResults from "../components/SearchResults";
+import AdminRoute from "./AdminRoute";
+import AdminLogin from "../components/AdminLogin";
+import DashboardLayout from "../pages/dashboard/DashboardLayout";
+import Dashboard from "../pages/dashboard/Dashboard";
+import AddBook from "../pages/dashboard/addBook/AddBook";
+import ManageBooks from "../pages/dashboard/manageBooks/ManageBooks";
 
 
 const router = createBrowserRouter([
@@ -50,6 +56,36 @@ const router = createBrowserRouter([
             {
                 path: "/books/:id",
                 element: <SingleBooks />
+            },
+        ]
+    },
+
+    {
+        path: "/admin",
+        element: <AdminLogin />,
+    },
+
+    {
+        path: "/dashboard",
+        element: <AdminRoute>
+            <DashboardLayout />
+        </AdminRoute>,
+        children:[
+            {
+                path : "",
+                element: <AdminRoute><Dashboard /></AdminRoute>
+            },
+            {
+                path: "add-new-book",
+                element: <AdminRoute><AddBook /></AdminRoute>   
+            },
+            {
+                path: "edit-book/:id",
+                element: <AdminRoute><div>Edit Book</div> </AdminRoute>  
+            },
+            {
+                path: "manage-books",
+                element:<AdminRoute> <ManageBooks /> </AdminRoute>  
             },
         ]
     }

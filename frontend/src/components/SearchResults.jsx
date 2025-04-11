@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import BookCard from '../pages/home/books/BookCard';
+import BookCard from '../pages/books/BookCard';
 
 const SearchResults = () => {
     const location = useLocation();
