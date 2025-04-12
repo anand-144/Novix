@@ -6,6 +6,8 @@ import { Link, Outlet, useNavigate } from 'react-router';
 import { HiViewGridAdd } from 'react-icons/hi';
 import { MdOutlineManageHistory } from "react-icons/md";
 
+import logo from '../../assets/logo.png'
+
 const DashboardLayout = () => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState({});
@@ -34,9 +36,11 @@ const DashboardLayout = () => {
     }, []);
 
 
-    const handleLogout = () => {
+const handleLogout = () => {
+    localStorage.removeItem('token'); // remove the token
+    navigate('/login'); // redirect to login page (update route if needed)
+}
 
-    }
 
     if (loading) return <Loading />
 
@@ -44,7 +48,7 @@ const DashboardLayout = () => {
         <section className="flex md:bg-gray-100 min-h-screen overflow-hidden">
             <aside className="hidden sm:flex sm:flex-col">
                 <a href="/" className="inline-flex items-center justify-center h-20 w-20 bg-purple-600 hover:bg-purple-500 focus:bg-purple-500">
-                    <img src="/fav-icon.png" alt="" />
+                    <img src={logo} alt="logo" className='w-9 h-9'/>
                 </a>
                 <div className="flex-grow flex flex-col justify-between text-gray-500 bg-gray-800">
                     <nav className="flex flex-col mx-4 my-6 space-y-4">
