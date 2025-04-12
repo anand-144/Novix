@@ -38,7 +38,7 @@ const DashboardLayout = () => {
 
 const handleLogout = () => {
     localStorage.removeItem('token'); // remove the token
-    navigate('/login'); // redirect to login page (update route if needed)
+    navigate('/admin'); // redirect to login page (update route if needed)
 }
 
 
