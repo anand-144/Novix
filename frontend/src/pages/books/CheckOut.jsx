@@ -14,67 +14,65 @@ const CheckOut = () => {
     const { currentUser } = useAuth();
     const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY;
 
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    // Log the key to verify it's loaded (should not be undefined)
+    console.log("Razorpay Key:", razorpayKey);
+
+    const { register, handleSubmit } = useForm();
     const [isChecked, setIsChecked] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState('COD');
 
-    const [createOrder, { isLoading, error }] = useCreateOrderMutation();
+    const [createOrder, { isLoading }] = useCreateOrderMutation();
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-  const onSubmit = async (data) => {
-    if (totalPrice <= 0 || cartItems.length === 0) {
-        toast.error("🛒 Your cart is empty.");
-        return;
-    }
+    const onSubmit = async (data) => {
+        if (totalPrice <= 0 || cartItems.length === 0) {
+            toast.error("🛒 Your cart is empty.");
+            return;
+        }
 
-    const newOrder = {
-        name: data.name,
-        email: currentUser?.email,
-        address: {
-            street: data.street,
-            city: data.city,
-            country: data.country,
-            state: data.state,
-            zipcode: data.zipcode
-        },
-        phone: data.phone,
-        productIds: cartItems.map(item => item?._id),
-        totalPrice,
-        paymentMethod,
+        // Build the order object
+        const newOrder = {
+            name: data.name,
+            email: currentUser?.email,
+            address: {
+                street: data.street,
+                city: data.city,
+                country: data.country,
+                state: data.state,
+                zipcode: data.zipcode
+            },
+            phone: data.phone,
+            productIds: cartItems.map(item => item?._id),
+            totalPrice,
+            paymentMethod,
+        };
+
+        // For Razorpay, trigger the payment flow first
+        if (paymentMethod === 'Razorpay') {
+            handleRazorpayPayment(newOrder);
+            return;
+        } else {
+            // For COD, create order immediately
+            try {
+                await createOrder(newOrder).unwrap();
+                dispatch(clearCart());
+                toast.success("✅ Order placed successfully with Cash on Delivery.");
+                navigate('/orders');
+            } catch (error) {
+                toast.error("Error placing order. Please try again.");
+                console.error("⚠️ Order Error:", error);
+            }
+        }
     };
-
-    try {
-        await createOrder(newOrder).unwrap();
-        dispatch(clearCart());
-        navigate('/orders');
-    } catch (error) {
-        toast.error("Error placing order. Please try again.");
-        console.error("⚠️ Order Error:", error); 
-        return;
-    }
-
-    if (paymentMethod === 'Razorpay') {
-        handleRazorpayPayment(newOrder);
-    } else {
-        toast.success("✅ Order placed successfully with Cash on Delivery.");
-        console.log("🧾 Order placed via COD:", newOrder);
-    }
-};
-
 
     const handleRazorpayPayment = (order) => {
         const options = {
             key: razorpayKey,
-            amount: parseFloat(order.totalPrice) * 100,
+            amount: parseFloat(order.totalPrice) * 100, // amount in paise
             currency: "INR",
             name: "Novix",
             description: "Test Payment",
-            handler: function (response) {
-                toast.success("💳 Payment successful! ID: " + response.razorpay_payment_id);
-                console.log("✅ Razorpay Payment Success:", response);
-                console.log("🧾 Order Details:", order);
-            },
             prefill: {
                 name: order.name,
                 email: order.email,
@@ -82,6 +80,34 @@ const CheckOut = () => {
             },
             theme: {
                 color: "#3399cc"
+            },
+            // This handler executes after a successful payment
+            handler: async function (response) {
+                if (response.razorpay_payment_id) {
+                    // Extend order with payment details
+                    const paidOrder = {
+                        ...order,
+                        paymentId: response.razorpay_payment_id,
+                        paymentStatus: "Paid",
+                    };
+                    try {
+                        await createOrder(paidOrder).unwrap();
+                        dispatch(clearCart());
+                        toast.success("💳 Payment successful and order placed! Payment ID: " + response.razorpay_payment_id);
+                        navigate('/orders');
+                    } catch (error) {
+                        toast.error("Order creation failed after payment.");
+                        console.error("⚠️ Order creation error:", error);
+                    }
+                } else {
+                    toast.error("Payment failed: No payment ID received.");
+                }
+            },
+            modal: {
+                // This is optional—it fires if user cancels the payment
+                ondismiss: function () {
+                    toast.error("❌ Payment cancelled.");
+                }
             }
         };
 
@@ -94,7 +120,8 @@ const CheckOut = () => {
         }
     };
 
-    if(isLoading) return <div>Loading....</div>
+    if (isLoading) return <div>Loading....</div>;
+
     return (
         <div className="min-h-screen p-6 bg-gray-100 flex items-center justify-center">
             <div className="container max-w-screen-lg mx-auto">
@@ -152,7 +179,9 @@ const CheckOut = () => {
                                     <div className="md:col-span-5 mt-3">
                                         <div className="inline-flex items-center">
                                             <input type="checkbox" checked={isChecked} onChange={() => setIsChecked(!isChecked)} className="form-checkbox" />
-                                            <label className="ml-2">I agree to the <Link className='underline text-blue-600'>Terms & Conditions</Link></label>
+                                            <label className="ml-2">
+                                                I agree to the <Link className='underline text-blue-600'>Terms & Conditions</Link>
+                                            </label>
                                         </div>
                                     </div>
                                     <div className="md:col-span-5 text-right">

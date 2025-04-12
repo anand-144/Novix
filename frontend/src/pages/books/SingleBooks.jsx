@@ -5,6 +5,7 @@ import { getImgUrl } from '../../utils/getImgUrl';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../../redux/features/cart/cartSlice';
 import { useFetchBookByIdQuery } from '../../redux/features/books/booksApi';
+import { updateCurrentUser } from 'firebase/auth';
 
 
 const SingleBook = () => {
@@ -15,7 +16,7 @@ const SingleBook = () => {
     const dispatch = useDispatch();
 
     const handleAddToCart = (product) => {
-        dispatch(addToCart({ userEmail: currentUser.email, item: product }));
+        dispatch(addToCart({ userEmail: updateCurrentUser.email, item: product }));
 
 
     }
