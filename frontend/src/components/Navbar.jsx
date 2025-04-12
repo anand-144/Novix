@@ -11,13 +11,15 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useFetchAllBooksQuery } from '../redux/features/books/booksApi'; // make sure this exists
 
-
-
 const navigation = [
-    { name: "Dashboard", href: "/dashboard" },
     { name: "Orders", href: "/orders" },
     { name: "Cart Page", href: "/cart" },
     { name: "Check Out", href: "/checkout" }
+];
+
+const adminNavigation = [
+    { name: "Dashboard", href: "/dashboard" },
+    ...navigation
 ];
 
 const Navbar = () => {
@@ -70,8 +72,6 @@ const Navbar = () => {
         navigate("/search", { state: { results, keyword: searchTerm } });
     };
 
-
-
     return (
         <header className="max-w-screen-2xl mx-auto px-6 md:px-12 py-4 md:py-6">
             <nav className="flex justify-between items-center">
@@ -93,46 +93,64 @@ const Navbar = () => {
                             className="bg-[#EAEAEA] w-full py-1 pl-8 pr-2 rounded-md focus:outline-none"
                         />
                     </form>
-
                 </div>
 
                 {/* Right Side */}
                 <div className="relative flex items-center space-x-4 md:space-x-6">
-                    <div>
-                        {currentUser ? (
-                            <div className="relative" ref={dropdownRef}>
-                                <button onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
-                                    <img src={avatarImg} alt="avatar" className="rounded-full ring-2 ring-blue-500" />
-                                </button>
-                                {isDropdownOpen && (
-                                    <div className="absolute right-0 mt-2 w-48 bg-primary shadow-md rounded-md z-40 font-medium">
-                                        <ul className="py-2">
-                                            {navigation.map((item) => (
-                                                <li key={item.name} onClick={() => setIsDropdownOpen(false)}>
-                                                    <Link to={item.href} className="px-4 py-2 hover:bg-yellow-200 block text-sm">
-                                                        {item.name}
-                                                    </Link>
-                                                </li>
-                                            ))}
-                                            <li>
-                                                <button
-                                                    onClick={handelLogOut}
-                                                    className="w-full text-left px-4 py-2 hover:bg-yellow-200 block text-sm"
-                                                >
-                                                    Logout
-                                                </button>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                )}
-                            </div>
-                        ) : (
-                            <Link to="/login">
+                    {/* User and Admin Login Dropdown */}
+                    {!currentUser ? (
+                        <div className="relative" ref={dropdownRef}>
+                            <button onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
                                 <FaRegUser className="size-6" />
-                            </Link>
-                        )}
-                    </div>
+                            </button>
+                            {isDropdownOpen && (
+                                <div className="absolute right-0 mt-2 w-48 bg-primary shadow-md rounded-md z-40 font-medium">
+                                    <ul className="py-2">
+                                        <li>
+                                            <Link to="/login" className="block px-4 py-2 text-sm hover:bg-yellow-200">
+                                                User Login
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            <Link to="/admin" className="block px-4 py-2 text-sm hover:bg-yellow-200">
+                                                Admin Login
+                                            </Link>
+                                        </li>
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="relative" ref={dropdownRef}>
+                            <button onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+                                <img src={avatarImg} alt="avatar" className="rounded-full ring-2 ring-blue-500" />
+                            </button>
+                            {isDropdownOpen && (
+                                <div className="absolute right-0 mt-2 w-48 bg-primary shadow-md rounded-md z-40 font-medium">
+                                    <ul className="py-2">
+                                        {/* Render admin navigation if the user is admin */}
+                                        {(currentUser?.role === 'admin' ? adminNavigation : navigation).map((item) => (
+                                            <li key={item.name}>
+                                                <Link to={item.href} className="block px-4 py-2 text-sm hover:bg-yellow-200">
+                                                    {item.name}
+                                                </Link>
+                                            </li>
+                                        ))}
+                                        <li>
+                                            <button
+                                                onClick={handelLogOut}
+                                                className="w-full text-left px-4 py-2 hover:bg-yellow-200 block text-sm"
+                                            >
+                                                Logout
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+                    )}
 
+                    {/* Wishlist and Cart */}
                     <button className="hidden sm:block">
                         <FaRegHeart className="size-6" />
                     </button>
