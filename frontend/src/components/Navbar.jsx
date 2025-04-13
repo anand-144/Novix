@@ -151,11 +151,11 @@ const Navbar = () => {
                     )}
 
                     {/* Wishlist and Cart */}
-                    <button className="hidden sm:block">
+                    {/* <button className="hidden sm:block">
                         <FaRegHeart className="size-6" />
-                    </button>
+                    </button> */}
 
-                    <Link to="/cart" className="bg-primary p-1 px-3 sm:px-5 flex items-center rounded-sm">
+                    <Link to="/cart" className="bg-orange-500 p-1 px-3 sm:px-5 flex items-center rounded-sm text-white">
                         <HiOutlineShoppingCart className="size-6" />
                         <span className="text-sm font-semibold sm:ml-1">
                             {cartItems.reduce((total, item) => total + (item.quantity || 1), 0)}

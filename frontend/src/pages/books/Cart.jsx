@@ -64,12 +64,12 @@ const Cart = () => {
                             <p className="mt-1 text-sm text-gray-500 capitalize"><strong>Category:</strong> {product?.category}</p>
                           </div>
                           <div className="flex flex-1 flex-wrap items-end justify-between space-y-2 text-sm">
-                            <p className="text-gray-500"><strong>Qty:</strong> 1</p>
+                            <p className="text-gray-500"><strong>Qty:</strong> {product?.quantity}</p>
 
                             <div className="flex">
                               <button
                               onClick={() => handleRemoveFromCart(product)}
-                              type="button" className="font-medium text-indigo-600 hover:text-indigo-500">
+                              type="button" className="font-medium text-indigo-600 hover:text-indigo-500 ">
                                 Remove
                               </button>
                             </div>
@@ -96,7 +96,7 @@ const Cart = () => {
         <div className="mt-6">
           <Link
             to="/checkout"
-            className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
+            className="flex sm:w-1/6 items-center justify-center rounded-md border border-transparent bg-green-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-pink-700"
           >
             Checkout
           </Link>

@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const newsSchema = new mongoose.Schema({
     title: {
@@ -13,7 +13,7 @@ const newsSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    image2: {  // Changed from duplicate Image1 to image2
+    image2: {
         type: String,
         required: true,
     },

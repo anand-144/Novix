@@ -12,7 +12,10 @@ router.get("/", getAllNews);
 // Get single news article by id
 router.get("/:id", getSingleNews);
 
-// Delete a news article endpoint
+// Update a news article by id
+router.put("/:id", verifyAdminToken, updateNews);
+
+// Delete a news article by id
 router.delete("/:id", verifyAdminToken, deletedNews);
 
 module.exports = router;
