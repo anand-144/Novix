@@ -1,7 +1,6 @@
-import React, { useState } from 'react'
-import InputField from './InputField'
-import SelectField from './SelectField'
-import AddNews from '../addNews/AddNews' // 👈 Import AddNews component
+import React, { useState } from 'react';
+import InputField from './InputField';
+import SelectField from './SelectField';
 import { useForm } from 'react-hook-form';
 import { useAddBookMutation } from '../../../redux/features/books/booksApi';
 import Swal from 'sweetalert2';
@@ -9,26 +8,75 @@ import Swal from 'sweetalert2';
 const AddBook = () => {
     const { register, handleSubmit, formState: { errors }, reset } = useForm();
     const [imageFile, setimageFile] = useState(null);
-    const [addBook, { isLoading, isError }] = useAddBookMutation();
+    const [addBook, { isLoading }] = useAddBookMutation();
     const [imageFileName, setimageFileName] = useState('');
     const [imageFileName1, setimageFileName1] = useState('');
 
-    const onSubmit = async (data) => {
-        const newBookData = {
-            ...data,
-            coverImage: imageFileName,
-            backImage: imageFileName1
+    const validateImageDimensions = (file, setImageFileName, type) => {
+        const img = new Image();
+        const objectUrl = URL.createObjectURL(file);
+
+        img.onload = () => {
+            if (img.width !== 180 || img.height !== 250) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid Image Size',
+                    text: `The ${type} image must be exactly 180px wide and 250px tall.`,
+                });
+            } else {
+                setImageFileName(file.name);
+            }
+            URL.revokeObjectURL(objectUrl);
+        };
+
+        img.src = objectUrl;
+    };
+
+    const handleCoverImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            validateImageDimensions(file, setimageFileName, 'cover');
         }
+    };
+
+    const handleBackImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            validateImageDimensions(file, setimageFileName1, 'back');
+        }
+    };
+
+    const onSubmit = async (data) => {
+        const formData = new FormData();
+    
+        formData.append('title', data.title);
+        formData.append('description', data.description);
+        formData.append('category', data.category);
+        formData.append('trending', data.trending);
+        formData.append('oldPrice', data.oldPrice);
+        formData.append('newPrice', data.newPrice);
+    
+        const coverImageFile = document.querySelector('input[type=file]').files[0];
+        const backImageFile = document.querySelectorAll('input[type=file]')[1].files[0];
+    
+        if (!coverImageFile || !backImageFile) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Images Required',
+                text: 'Please upload both cover and back images.',
+            });
+            return;
+        }
+    
+        formData.append('coverImage', coverImageFile);
+        formData.append('backImage', backImageFile);
+    
         try {
-            await addBook(newBookData).unwrap();
+            await addBook(formData).unwrap();
             Swal.fire({
                 title: "Book added",
-                text: "Your book is uploaded successfully!",
+                text: "Your book has been uploaded successfully!",
                 icon: "success",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, It's Okay!"
             });
             reset();
             setimageFileName('');
@@ -36,55 +84,80 @@ const AddBook = () => {
             setimageFile(null);
         } catch (error) {
             console.error(error);
-            alert("Failed to add book. Please try again.");
-        }
-    }
-
-    const handleCoverImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setimageFile(file);
-            setimageFileName(file.name);
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: error?.data?.message || 'Failed to add book. Please try again.',
+            });
         }
     };
-
-    const handleBackImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setimageFile(file);
-            setimageFileName1(file.name);
-        }
-    };
-
+    
     return (
         <div className="flex flex-col md:flex-row gap-6 p-4">
-            {/* Add Book Form */}
             <div className="w-full md:w-1/2 max-w-lg mx-auto md:p-6 p-3 bg-white rounded-lg shadow-md">
                 <h2 className="text-2xl font-bold text-gray-800 mb-4">Add New Book</h2>
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    <InputField label="Title" name="title" placeholder="Enter book title" register={register} />
-                    <InputField label="Description" name="description" placeholder="Enter book description" type="textarea" register={register} />
+                    <InputField label="Title" name="title" placeholder="Enter book title" register={register} required />
+                    <InputField label="Description" name="description" placeholder="Enter book description" type="textarea" register={register} required />
                     <SelectField
                         label="Category"
                         name="category"
                         options={[
                             { value: '', label: 'Choose A Category' },
+                            { value: 'action-and-adventure', label: 'Action and Adventure' },
+                            { value: 'art', label: 'Art' },
+                            { value: 'autobiography', label: 'Autobiography' },
+                            { value: 'biography', label: 'Biography' },
                             { value: 'business', label: 'Business' },
-                            { value: 'technology', label: 'Technology' },
+                            { value: 'children', label: "Children's" },
+                            { value: 'classic', label: 'Classic' },
+                            { value: 'comics', label: 'Comics' },
+                            { value: 'cookbooks', label: 'Cookbooks' },
+                            { value: 'crime', label: 'Crime' },
+                            { value: 'drama', label: 'Drama' },
+                            { value: 'dystopian', label: 'Dystopian' },
+                            { value: 'education', label: 'Education' },
+                            { value: 'fantasy', label: 'Fantasy' },
                             { value: 'fiction', label: 'Fiction' },
+                            { value: 'graphic-novel', label: 'Graphic Novel' },
+                            { value: 'historical-fiction', label: 'Historical Fiction' },
+                            { value: 'history', label: 'History' },
                             { value: 'horror', label: 'Horror' },
-                            { value: 'adventure', label: 'Adventure' },
+                            { value: 'humor', label: 'Humor' },
+                            { value: 'literary-fiction', label: 'Literary Fiction' },
+                            { value: 'memoir', label: 'Memoir' },
+                            { value: 'mystery', label: 'Mystery' },
+                            { value: 'non-fiction', label: 'Non-fiction' },
+                            { value: 'paranormal', label: 'Paranormal' },
+                            { value: 'philosophy', label: 'Philosophy' },
+                            { value: 'poetry', label: 'Poetry' },
+                            { value: 'psychology', label: 'Psychology' },
+                            { value: 'religion', label: 'Religion' },
+                            { value: 'romance', label: 'Romance' },
+                            { value: 'science', label: 'Science' },
+                            { value: 'science-fiction', label: 'Science Fiction' },
+                            { value: 'self-help', label: 'Self-help' },
+                            { value: 'short-stories', label: 'Short Stories' },
+                            { value: 'spirituality', label: 'Spirituality' },
+                            { value: 'sports', label: 'Sports' },
+                            { value: 'supernatural', label: 'Supernatural' },
+                            { value: 'thriller', label: 'Thriller' },
+                            { value: 'travel', label: 'Travel' },
+                            { value: 'true-crime', label: 'True Crime' },
+                            { value: 'western', label: 'Western' },
+                            { value: 'young-adult', label: 'Young Adult' },
                         ]}
                         register={register}
                     />
+
                     <div className="mb-4">
                         <label className="inline-flex items-center">
                             <input type="checkbox" {...register('trending')} className="rounded text-blue-600 focus:ring focus:ring-offset-2 focus:ring-blue-500" />
                             <span className="ml-2 text-sm font-semibold text-gray-700">Trending</span>
                         </label>
                     </div>
-                    <InputField label="Old Price" name="oldPrice" type="number" placeholder="Old Price" register={register} />
-                    <InputField label="New Price" name="newPrice" type="number" placeholder="New Price" register={register} />
+                    <InputField label="Old Price" name="oldPrice" type="number" placeholder="Old Price" register={register} required />
+                    <InputField label="New Price" name="newPrice" type="number" placeholder="New Price" register={register} required />
                     <div className="mb-4">
                         <label className="block text-sm font-semibold text-gray-700 mb-2">Cover Image</label>
                         <input type="file" accept="image/*" onChange={handleCoverImageChange} className="mb-2 w-full" />
@@ -101,7 +174,7 @@ const AddBook = () => {
                 </form>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default AddBook
+export default AddBook;

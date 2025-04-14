@@ -15,10 +15,6 @@ import Dashboard from "../pages/dashboard/Dashboard";
 import ManageBooks from "../pages/dashboard/manageBook/ManageBooks";
 import AddBook from "../pages/dashboard/addBook/AddBook";
 import UpdateBook from "../pages/dashboard/EditBook/UpdateBook";
-import SingleNews from "../pages/news/SingleNews";
-import AddNews from "../pages/dashboard/addNews/AddNews";
-import EditNews from "../pages/dashboard/editNews/EditNews";
-import ManageNews from "../pages/dashboard/manageNews/ManageNews";
 
 
 const router = createBrowserRouter([
@@ -62,10 +58,6 @@ const router = createBrowserRouter([
                 path: "/books/:id",
                 element: <SingleBooks />
             },
-            {
-                path: "/news/:id",
-                element: <SingleNews />
-            },
         ]
     },
 
@@ -95,18 +87,6 @@ const router = createBrowserRouter([
             {
                 path: "manage-books",
                 element:<AdminRoute> <ManageBooks /> </AdminRoute>  
-            },
-            {
-                path: "add-news",
-                element:<AdminRoute> <AddNews /> </AdminRoute>  
-            },
-            {
-                path: "edit-news/:id",
-                element:<AdminRoute> <EditNews /> </AdminRoute>  
-            },
-            {
-                path: "manage-news",
-                element:<AdminRoute> <ManageNews /> </AdminRoute>  
             },
         ]
     }

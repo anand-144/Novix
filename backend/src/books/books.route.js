@@ -1,22 +1,30 @@
-const express  = require('express');
-const Book = require('./books.model');
-const { postABook, getAllBooks, getSingleBook, UpdateBook, deletedBook , } = require('./books.controller');
+const express = require('express');
+const router = express.Router();
+const { postABook, getAllBooks, getSingleBook, UpdateBook, deletedBook } = require('../books/books.controller');
 const verifyAdminToken = require('../middleware/verfiyAdminToken');
-const router = express.Router()
+const upload = require('../utils/imageUpload');
 
-//post a book
-router.post("/create-book" , verifyAdminToken,  postABook)
+// Create book with image upload
+router.post(
+  "/create-book",
+  verifyAdminToken,
+  upload.fields([
+    { name: 'coverImage', maxCount: 1 },
+    { name: 'backImage', maxCount: 1 }
+  ]),
+  postABook
+);
 
-//get all books
-router.get("/" , getAllBooks)
+// Get all books
+router.get("/", getAllBooks);
 
-//single book endpoint
-router.get("/:id" , getSingleBook)
+// Get single book
+router.get("/:id", getSingleBook);
 
-//update Book
-router.put("/edit/:id" , verifyAdminToken ,UpdateBook)
+// Update book
+router.put("/edit/:id", verifyAdminToken, UpdateBook);
 
-//Delete Book
-router.delete("/:id" , verifyAdminToken ,  deletedBook)
+// Delete book
+router.delete("/:id", verifyAdminToken, deletedBook);
 
 module.exports = router;

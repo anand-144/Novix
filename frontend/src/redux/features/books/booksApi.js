@@ -27,13 +27,14 @@ const booksApi = createApi({
             providesTags: (results , error , id) => [{type: "Books" , id}]
         }),
         addBook: builder.mutation({
-            query: (newBook) =>({
+            query: (newBook) => ({
                 url: `/create-book`,
                 method: "POST",
-                body: newBook
+                body: newBook // this will be FormData from your component
             }),
             invalidatesTags: ["Books"]
         }),
+        
         updateBook: builder.mutation({
             query: ({id, ...rest}) =>({
                 url: `/edit/${id}`,
