@@ -56,10 +56,22 @@ const SingleBook = () => {
                         <p className="text-gray-700 mb-3 capitalize">
                             <strong>Category:</strong> {book?.category || 'N/A'}
                         </p>
-                        <p className="text-gray-700"><strong>Description:</strong> {book?.description || 'No description available.'}</p>
+                        <p className="text-gray-700 font-semibold mb-1"><strong>Description:</strong></p>
+                        <ul className="list-disc list-inside text-gray-700 space-y-1">
+                            {book?.description
+                                ? book.description
+                                    .split(/\r?\n|\. |; | - /) // You can adjust this regex to fit your description format
+                                    .filter(point => point.trim() !== '')
+                                    .map((point, index) => (
+                                        <li key={index}>{point.trim()}</li>
+                                    ))
+                                : <li>No description available.</li>
+                            }
+                        </ul>
+
                     </div>
 
-                   
+
 
 
                     {/* Price and Add to Cart in same line */}
