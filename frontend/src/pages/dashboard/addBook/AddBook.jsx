@@ -11,26 +11,7 @@ const AddBook = () => {
     const [imageFileName1, setimageFileName1] = useState('');
     const [addBook, { isLoading }] = useAddBookMutation();
 
-    const validateImageDimensions = (file, setImageFileName, type) => {
-        const img = new Image();
-        const objectUrl = URL.createObjectURL(file);
-
-        img.onload = () => {
-            if (img.width !== 180 || img.height !== 250) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Invalid Image Size',
-                    text: `The ${type} image must be exactly 180px wide and 250px tall.`,
-                });
-            } else {
-                setImageFileName(file.name);
-            }
-            URL.revokeObjectURL(objectUrl);
-        };
-
-        img.src = objectUrl;
-    };
-
+    
     const handleCoverImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -52,6 +33,7 @@ const AddBook = () => {
         formData.append('description', data.description);
         formData.append('category', data.category);
         formData.append('trending', data.trending);
+        formData.append('author', data.author);
 
         // Only append price if provided
         if (data.oldPrice) formData.append('oldPrice', data.oldPrice);
@@ -91,6 +73,7 @@ const AddBook = () => {
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <InputField label="Title" name="title" placeholder="Enter book title" register={register} required />
                     <InputField label="Description" name="description" placeholder="Enter book description" type="textarea" register={register} required />
+                    <InputField label="Author Name" name="author" placeholder="Enter author name" type="textarea" register={register} required />
                     <SelectField
                         label="Category"
                         name="category"

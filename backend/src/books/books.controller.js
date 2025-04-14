@@ -4,12 +4,18 @@ const cloudinary = require('../utils/cloudinaryConfig');
 // Create a new book with image upload
 const postABook = async (req, res) => {
   try {
-    const { title, description, category, trending, oldPrice, newPrice } = req.body;
+    const { title, description, category, trending, oldPrice, newPrice, author } = req.body;
+
+    // Validate required fields
+    if (!title || !description || !category || !author) {
+      return res.status(400).send({ message: "Title, description, category, and author are required!" });
+    }
 
     if (!req.files || !req.files.coverImage || !req.files.backImage) {
       return res.status(400).send({ message: "Cover and Back images are required!" });
     }
 
+    // Upload cover image
     const coverImage = await new Promise((resolve, reject) => {
       cloudinary.uploader.upload_stream({ resource_type: 'image' }, (err, result) => {
         if (err) return reject(err);
@@ -17,6 +23,7 @@ const postABook = async (req, res) => {
       }).end(req.files.coverImage[0].buffer);
     });
 
+    // Upload back image
     const backImage = await new Promise((resolve, reject) => {
       cloudinary.uploader.upload_stream({ resource_type: 'image' }, (err, result) => {
         if (err) return reject(err);
@@ -24,15 +31,17 @@ const postABook = async (req, res) => {
       }).end(req.files.backImage[0].buffer);
     });
 
+    // Create new book
     const newBook = await Book.create({
       title,
       description,
       category,
       trending,
-      oldPrice: oldPrice || '', // If oldPrice is not provided, set it as undefined
+      oldPrice: oldPrice || '',
       newPrice: newPrice || '',
       coverImage,
       backImage,
+      author: author || 'Unknown',  // Set default if no author is provided
     });
 
     res.status(200).send({ message: "Book posted successfully", book: newBook });
@@ -69,49 +78,47 @@ const getSingleBook = async (req, res) => {
 
 // Update book
 const UpdateBook = async (req, res) => {
-    try {
-      const { id } = req.params;
-      const updateData = { ...req.body };
-  
-      // Handle cover image if provided
-      if (req.files?.coverImage?.[0]) {
-        const uploadedCoverImage = await new Promise((resolve, reject) => {
-          cloudinary.uploader.upload_stream({ resource_type: 'image' }, (err, result) => {
-            if (err) return reject(err);
-            resolve(result.secure_url);
-          }).end(req.files.coverImage[0].buffer);
-        });
-        updateData.coverImage = uploadedCoverImage;
-      }
-  
-      // Handle back image if provided
-      if (req.files?.backImage?.[0]) {
-        const uploadedBackImage = await new Promise((resolve, reject) => {
-          cloudinary.uploader.upload_stream({ resource_type: 'image' }, (err, result) => {
-            if (err) return reject(err);
-            resolve(result.secure_url);
-          }).end(req.files.backImage[0].buffer);
-        });
-        updateData.backImage = uploadedBackImage;
-      }
-  
-      const updatedBook = await Book.findByIdAndUpdate(id, updateData, { new: true });
-  
-      if (!updatedBook) {
-        return res.status(404).send({ message: "Book not found!" });
-      }
-  
-      res.status(200).send({
-        message: "Book updated successfully",
-        book: updatedBook,
+  try {
+    const { id } = req.params;
+    const { title, description, category, trending, oldPrice, newPrice, author } = req.body;
+    const updateData = { title, description, category, trending, oldPrice, newPrice, author };
+
+    if (req.files?.coverImage?.[0]) {
+      const uploadedCoverImage = await new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream({ resource_type: 'image' }, (err, result) => {
+          if (err) return reject(err);
+          resolve(result.secure_url);
+        }).end(req.files.coverImage[0].buffer);
       });
-  
-    } catch (error) {
-      console.error("Error updating book", error);
-      res.status(500).send({ message: "Failed to update book" });
+      updateData.coverImage = uploadedCoverImage;
     }
-  };
-  
+
+    if (req.files?.backImage?.[0]) {
+      const uploadedBackImage = await new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream({ resource_type: 'image' }, (err, result) => {
+          if (err) return reject(err);
+          resolve(result.secure_url);
+        }).end(req.files.backImage[0].buffer);
+      });
+      updateData.backImage = uploadedBackImage;
+    }
+
+    const updatedBook = await Book.findByIdAndUpdate(id, updateData, { new: true });
+
+    if (!updatedBook) {
+      return res.status(404).send({ message: "Book not found!" });
+    }
+
+    res.status(200).send({
+      message: "Book updated successfully",
+      book: updatedBook,
+    });
+
+  } catch (error) {
+    console.error("Error updating book", error);
+    res.status(500).send({ message: "Failed to update book" });
+  }
+};
 
 // Delete book
 const deletedBook = async (req, res) => {

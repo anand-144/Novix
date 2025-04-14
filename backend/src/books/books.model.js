@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const bookSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -9,6 +9,7 @@ const bookSchema = new mongoose.Schema({
   backImage: { type: String, required: true },
   oldPrice: { type: Number, required: true },
   newPrice: { type: Number, required: true },
+  author: { type: String, required: true },  // Ensure the author field is marked as required
   createdAt: { type: Date, default: Date.now },
 }, { timestamps: true });
 

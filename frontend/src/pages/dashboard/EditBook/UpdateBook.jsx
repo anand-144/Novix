@@ -23,6 +23,7 @@ const UpdateBook = () => {
       setValue('oldPrice', bookData.oldPrice);
       setValue('newPrice', bookData.newPrice);
       setValue('genre', bookData.genre);
+      setValue('author', bookData.author);
     }
   }, [bookData, setValue]);
 
@@ -66,6 +67,7 @@ const UpdateBook = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <InputField label="Title" name="title" placeholder="Enter book title" register={register} />
         <InputField label="Description" name="description" placeholder="Enter book description" type="textarea" register={register} />
+        <InputField label="Author" name="author" placeholder="Enter author name" type="textarea" register={register} />
 
         <SelectField
           label="Category"

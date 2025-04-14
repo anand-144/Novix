@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import BannerImage1 from '../../assets/Banner.png';
 import BannerImage2 from '../../assets/Banner2.png'; // Add another banner image
 import BannerImage3 from '../../assets/Banner3.png'; // Add third banner image
+
+import Footer from '../../components/Footer';
 
 const banners = [
   {
@@ -35,6 +38,14 @@ const Banner = () => {
 
   const { image, title, text } = banners[currentIndex];
 
+  // Function to scroll to the footer
+  const scrollToFooter = () => {
+    const footer = document.getElementById('footer');
+    if (footer) {
+      footer.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className='relative py-8 px-6 md:px-12'>
       <div className='flex flex-col md:flex-row-reverse justify-between items-center gap-12'>
@@ -42,11 +53,10 @@ const Banner = () => {
         <div className='md:w-auto w-full flex items-start md:justify-start'>
           <img src={image} alt="Banner" className="w-full h-auto" />
         </div>
-
         <div className='md:w-1/2 w-full'>
           <h1 className='md:text-5xl text-2xl font-medium mb-7'>{title}</h1>
           <p className='mb-10'>{text}</p>
-          <button className='btn-primary'>Subscribe</button>
+          <button onClick={scrollToFooter} className='btn-primary'>Subscribe</button>
         </div>
       </div>
 
