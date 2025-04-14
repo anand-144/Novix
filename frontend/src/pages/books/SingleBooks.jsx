@@ -53,7 +53,7 @@ const SingleBook = () => {
                     {/* Price and Add to Cart in same line */}
                     <div className="flex justify-between items-center mt-3">
                         <p className="text-gray-700">
-                            <strong>Price: $</strong> {book?.newPrice}
+                            <strong>Price: ₹</strong> {book?.newPrice}
                         </p>
                         <button
                             onClick={() => handleAddToCart(book)}

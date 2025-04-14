@@ -10,7 +10,7 @@ import { clearCart } from '../../redux/features/cart/cartSlice';
 
 const CheckOut = () => {
     const cartItems = useSelector(state => state.cart.cartItems);
-    const totalPrice = cartItems.reduce((acc, item) => acc + item.newPrice, 0).toFixed(2);
+    const totalPrice = cartItems.reduce((acc, item) => acc + (item.newPrice * item.quantity), 0).toFixed(2);
     const { currentUser } = useAuth();
     const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY;
 
@@ -120,6 +120,8 @@ const CheckOut = () => {
         }
     };
 
+    console.log(totalPrice)
+
     if (isLoading) return <div>Loading....</div>;
 
     return (
@@ -127,7 +129,7 @@ const CheckOut = () => {
             <div className="container max-w-screen-lg mx-auto">
                 <div>
                     <h2 className="font-semibold text-xl text-gray-600 mb-2">Checkout</h2>
-                    <p className="text-gray-500 mb-2">Total Price: ${totalPrice}</p>
+                    <p className="text-gray-500 mb-2">Total Price: ₹{totalPrice}</p>
                     <p className="text-gray-500 mb-6">Items: {cartItems.length}</p>
 
                     <div className="bg-white rounded shadow-lg p-4 px-4 md:p-8 mb-6">

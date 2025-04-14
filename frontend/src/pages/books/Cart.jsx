@@ -6,11 +6,12 @@ import { clearCart, removeFromCart } from '../../redux/features/cart/cartSlice';
 const Cart = () => {
   const cartItems = useSelector(state => state.cart.cartItems);
   const dispatch = useDispatch();
-  
+
   // Define the Cloudinary base URL
   const cloudinaryBaseUrl = "https://res.cloudinary.com/dxunfwkpp/image/upload/v1/";
 
-  const totalPrice = cartItems.reduce((acc, item) => acc + item.newPrice, 0).toFixed(2);
+  // Calculate the total price considering item quantities
+  const totalPrice = cartItems.reduce((acc, item) => acc + (item.newPrice * item.quantity), 0).toFixed(2);
 
   const handleRemoveFromCart = (product) => {
     dispatch(removeFromCart(product));
@@ -20,9 +21,6 @@ const Cart = () => {
     dispatch(clearCart());
   };
 
-  console.log(cartItems)
-
-  
   return (
     <div className="flex mt-12 h-full flex-col overflow-hidden bg-white shadow-xl">
       <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
@@ -48,12 +46,10 @@ const Cart = () => {
                     <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                       {/* Using Cloudinary base URL directly */}
                       <img
-                        alt=""
+                        alt={product?.title}
                         src={product?.coverImage}
                         className="h-full w-full object-cover object-center"
-                        
                       />
-                      
                     </div>
                     <div className="ml-4 flex flex-1 flex-col">
                       <div>
@@ -61,7 +57,7 @@ const Cart = () => {
                           <h3>
                             <Link to="/">{product?.title}</Link>
                           </h3>
-                          <p className="sm:ml-4">${product?.newPrice}</p>
+                          <p className="sm:ml-4">${(product?.newPrice * product?.quantity).toFixed(2)}</p>
                         </div>
                         <p className="mt-1 text-sm text-gray-500 capitalize">
                           <strong>Category:</strong> {product?.category}
@@ -95,7 +91,7 @@ const Cart = () => {
       <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
         <div className="flex justify-between text-base font-medium text-gray-900">
           <p>Subtotal</p>
-          <p>${totalPrice ? totalPrice : 0}</p>
+          <p>₹{totalPrice || 0}</p>
         </div>
         <p className="mt-0.5 text-sm text-gray-500">
           Shipping and taxes calculated at checkout.

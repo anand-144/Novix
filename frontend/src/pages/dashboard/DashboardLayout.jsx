@@ -3,8 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Loading from '../../components/Loading';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { HiViewGridAdd } from 'react-icons/hi';
-import { MdOutlineManageHistory, MdOutlineNewspaper } from 'react-icons/md';
-import { RiFileEditLine } from 'react-icons/ri';
+import { MdOutlineManageHistory } from 'react-icons/md';
 import logo from '../../assets/logo.png';
 
 const DashboardLayout = () => {
@@ -58,12 +57,6 @@ const DashboardLayout = () => {
         <Link to="/dashboard/manage-books" title="Manage Books">
           <MdOutlineManageHistory className="h-6 w-6 text-white hover:text-purple-400" />
         </Link>
-        <Link to="/dashboard/add-news" title="Add News">
-          <MdOutlineNewspaper className="h-6 w-6 text-white hover:text-purple-400" />
-        </Link>
-        <Link to="/dashboard/manage-news" title="Manage News">
-          <RiFileEditLine className="h-6 w-6 text-white hover:text-purple-400" />
-        </Link>
         <button onClick={handleLogout} title="Logout">
           <svg className="h-6 w-6 text-white hover:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -85,12 +78,6 @@ const DashboardLayout = () => {
           </Link>
           <Link to="/dashboard/manage-books" title="Manage Books">
             <MdOutlineManageHistory className="h-6 w-6 text-white hover:text-purple-400" />
-          </Link>
-          <Link to="/dashboard/add-news" title="Add News">
-            <MdOutlineNewspaper className="h-6 w-6 text-white hover:text-purple-400" />
-          </Link>
-          <Link to="/dashboard/manage-news" title="Manage News">
-            <RiFileEditLine className="h-6 w-6 text-white hover:text-purple-400" />
           </Link>
           <button onClick={handleLogout} title="Logout">
             <svg className="h-6 w-6 text-white hover:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -29,8 +29,8 @@ const postABook = async (req, res) => {
       description,
       category,
       trending,
-      oldPrice,
-      newPrice,
+      oldPrice: oldPrice || '', // If oldPrice is not provided, set it as undefined
+      newPrice: newPrice || '',
       coverImage,
       backImage,
     });

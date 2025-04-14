@@ -7,10 +7,9 @@ import Swal from 'sweetalert2';
 
 const AddBook = () => {
     const { register, handleSubmit, formState: { errors }, reset } = useForm();
-    const [imageFile, setimageFile] = useState(null);
-    const [addBook, { isLoading }] = useAddBookMutation();
     const [imageFileName, setimageFileName] = useState('');
     const [imageFileName1, setimageFileName1] = useState('');
+    const [addBook, { isLoading }] = useAddBookMutation();
 
     const validateImageDimensions = (file, setImageFileName, type) => {
         const img = new Image();
@@ -48,29 +47,23 @@ const AddBook = () => {
 
     const onSubmit = async (data) => {
         const formData = new FormData();
-    
+
         formData.append('title', data.title);
         formData.append('description', data.description);
         formData.append('category', data.category);
         formData.append('trending', data.trending);
-        formData.append('oldPrice', data.oldPrice);
-        formData.append('newPrice', data.newPrice);
-    
+
+        // Only append price if provided
+        if (data.oldPrice) formData.append('oldPrice', data.oldPrice);
+        if (data.newPrice) formData.append('newPrice', data.newPrice);
+
         const coverImageFile = document.querySelector('input[type=file]').files[0];
-        const backImageFile = document.querySelectorAll('input[type=file]')[1].files[0];
-    
-        if (!coverImageFile || !backImageFile) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Images Required',
-                text: 'Please upload both cover and back images.',
-            });
-            return;
-        }
-    
-        formData.append('coverImage', coverImageFile);
-        formData.append('backImage', backImageFile);
-    
+        const backImageFile = document.querySelectorAll('input[type=file]')[1]?.files[0];
+
+        // Only append the image files if they are selected
+        if (coverImageFile) formData.append('coverImage', coverImageFile);
+        if (backImageFile) formData.append('backImage', backImageFile);
+
         try {
             await addBook(formData).unwrap();
             Swal.fire({
@@ -81,7 +74,6 @@ const AddBook = () => {
             reset();
             setimageFileName('');
             setimageFileName1('');
-            setimageFile(null);
         } catch (error) {
             console.error(error);
             Swal.fire({
@@ -91,7 +83,7 @@ const AddBook = () => {
             });
         }
     };
-    
+
     return (
         <div className="flex flex-col md:flex-row gap-6 p-4">
             <div className="w-full md:w-1/2 max-w-lg mx-auto md:p-6 p-3 bg-white rounded-lg shadow-md">
@@ -156,18 +148,22 @@ const AddBook = () => {
                             <span className="ml-2 text-sm font-semibold text-gray-700">Trending</span>
                         </label>
                     </div>
-                    <InputField label="Old Price" name="oldPrice" type="number" placeholder="Old Price" register={register} required />
-                    <InputField label="New Price" name="newPrice" type="number" placeholder="New Price" register={register} required />
+
+                    {/* Optional price fields */}
+                    <InputField label="Old Price" name="oldPrice" type="number" placeholder="Old Price" register={register} />
+                    <InputField label="New Price" name="newPrice" type="number" placeholder="New Price" register={register} />
+
                     <div className="mb-4">
                         <label className="block text-sm font-semibold text-gray-700 mb-2">Cover Image</label>
-                        <input type="file" accept="image/*" onChange={handleCoverImageChange} className="mb-2 w-full" />
+                        <input type="file" accept="image/*" onChange={handleCoverImageChange} className="mb-2 w-full" required />
                         {imageFileName && <p className="text-sm text-gray-500">Selected: {imageFileName}</p>}
                     </div>
                     <div className="mb-4">
                         <label className="block text-sm font-semibold text-gray-700 mb-2">Back Image</label>
-                        <input type="file" accept="image/*" onChange={handleBackImageChange} className="mb-2 w-full" />
+                        <input type="file" accept="image/*" onChange={handleBackImageChange} className="mb-2 w-full" required />
                         {imageFileName1 && <p className="text-sm text-gray-500">Selected: {imageFileName1}</p>}
                     </div>
+
                     <button type="submit" className="w-full py-2 bg-green-500 text-white font-bold rounded-md">
                         {isLoading ? 'Adding..' : 'Add Book'}
                     </button>
