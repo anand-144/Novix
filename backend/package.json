@@ -3,13 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "server": "node index.js",
-    "start": "nodemon index.js"
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "novix",
   "license": "ISC",
-  "description": "",
+  "description": "Novix backend - deployed on Vercel",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "cloudinary": "^2.6.0",

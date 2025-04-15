@@ -1,16 +1,15 @@
 const express = require('express');
-const app = express();
 const mongoose = require('mongoose');
-const cors = require("cors");
+const cors = require('cors');
 require('dotenv').config();
-const port = process.env.PORT || 5000;
+
+const app = express();
 
 // Middleware
 app.use(express.json());
 app.use(cors({
-    origin: ['http://localhost:5173'],
-    credentials: true,
-    optionsSuccessStatus: 200
+  origin: ['http://localhost:5173', 'https://your-frontend.vercel.app'], // update frontend URL
+  credentials: true
 }));
 
 // Routes
@@ -20,19 +19,25 @@ const userRoutes = require('./src/users/user.route');
 const adminRoutes = require('./src/stats/admin.stats');
 
 app.use("/api/books", bookRoutes);
-app.use('/api/orders', orderRoutes);
-app.use('/api/auth', userRoutes);
-app.use('/api/admin', adminRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/auth", userRoutes);
+app.use("/api/admin", adminRoutes);
 
-async function main() {
-    await mongoose.connect(process.env.DB_URL);
-    app.use('/', (req, res) => {
-        res.send('Novix server is running!')
-    });
+// Default route
+app.get('/', (req, res) => {
+  res.send('Novix server is running!');
+});
+
+// DB connect once
+let isConnected = false;
+async function connectDB() {
+  if (isConnected) return;
+  await mongoose.connect(process.env.DB_URL);
+  isConnected = true;
 }
 
-main().then(() => console.log("Mongodb connected successfully!")).catch(err => console.log(err));
-
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`);
-});
+// Export handler for Vercel
+module.exports = async (req, res) => {
+  await connectDB();
+  return app(req, res);
+};
