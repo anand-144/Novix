@@ -16,16 +16,31 @@ const ordersApi = createApi({
         body: newOrder,
         credentials: 'include',
       }),
-      invalidatesTags: ['Orders']
+      invalidatesTags: ['Orders'],
     }),
     getOrderByEmail: builder.query({
       query: (email) => ({
         url: `/email/${email}`,
       }),
-      providesTags: ['Orders']
+      providesTags: ['Orders'],
     }),
+    updateOrderStatus: builder.mutation({
+      query: ({ id, status }) => ({
+        url: `/admin/${id}/status`,  // Ensure this URL matches your backend route
+        method: "PATCH",  // Use PATCH for partial update
+        body: { orderStatus: status },
+      }),
+      // Invalidate tags to refresh the list of orders
+      invalidatesTags: ['Orders'],
+    }),
+    
   }),
 });
 
-export const { useCreateOrderMutation, useGetOrderByEmailQuery } = ordersApi;
+export const {
+  useCreateOrderMutation,
+  useGetOrderByEmailQuery,
+  useUpdateOrderStatusMutation,  // Export the update mutation
+} = ordersApi;
+
 export default ordersApi;

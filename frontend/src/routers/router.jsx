@@ -1,12 +1,12 @@
 import { createBrowserRouter } from "react-router";
 import App from "../App";
 import Home from "../pages/home/Home";
-import {Login, Register} from "../components";
+import { Login, Register } from "../components";
 import Cart from "../pages/books/Cart";
 import CheckOut from "../pages/books/CheckOut";
 import SingleBooks from "../pages/books/SingleBooks";
 import PrivateRoute from "./PrivateRoute";
-import Order from "../pages/books/OrderPage"
+import Order from "../pages/books/OrderPage";
 import SearchResults from "../components/SearchResults";
 import AdminRoute from "./AdminRoute";
 import AdminLogin from "../components/AdminLogin";
@@ -15,12 +15,12 @@ import Dashboard from "../pages/dashboard/Dashboard";
 import ManageBooks from "../pages/dashboard/manageBook/ManageBooks";
 import AddBook from "../pages/dashboard/addBook/AddBook";
 import UpdateBook from "../pages/dashboard/EditBook/UpdateBook";
-
+import SeeOrders from "../pages/dashboard/SeeOrders"; // Import SeeOrders component
 
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <App/>,
+        element: <App />,
         children: [
             {
                 path: "/",
@@ -28,15 +28,19 @@ const router = createBrowserRouter([
             },
             {
                 path: "/orders",
-                element: <PrivateRoute> <Order /> </PrivateRoute>,
+                element: (
+                    <PrivateRoute>
+                        <Order />
+                    </PrivateRoute>
+                ),
             },
             {
                 path: "/about",
-                element: <h1>About</h1>
+                element: <h1>About</h1>,
             },
             {
                 path: "/search",
-                element: <SearchResults />
+                element: <SearchResults />,
             },
             {
                 path: "/login",
@@ -48,17 +52,21 @@ const router = createBrowserRouter([
             },
             {
                 path: "/cart",
-                element: <Cart />
+                element: <Cart />,
             },
             {
                 path: "/checkout",
-                element: <PrivateRoute> <CheckOut /> </PrivateRoute> 
+                element: (
+                    <PrivateRoute>
+                        <CheckOut />
+                    </PrivateRoute>
+                ),
             },
             {
                 path: "/books/:id",
-                element: <SingleBooks />
+                element: <SingleBooks />,
             },
-        ]
+        ],
     },
 
     {
@@ -68,28 +76,57 @@ const router = createBrowserRouter([
 
     {
         path: "/dashboard",
-        element: <AdminRoute>
-            <DashboardLayout />
-        </AdminRoute>,
-        children:[
+        element: (
+            <AdminRoute>
+                <DashboardLayout />
+            </AdminRoute>
+        ),
+        children: [
             {
-                path : "",
-                element: <AdminRoute><Dashboard /></AdminRoute>
+                path: "",
+                element: (
+                    <AdminRoute>
+                        <Dashboard />
+                    </AdminRoute>
+                ),
             },
             {
                 path: "add-new-book",
-                element: <AdminRoute><AddBook /></AdminRoute>   
+                element: (
+                    <AdminRoute>
+                        <AddBook />
+                    </AdminRoute>
+                ),
             },
             {
                 path: "edit-book/:id",
-                element: <AdminRoute><div><UpdateBook /></div> </AdminRoute>  
+                element: (
+                    <AdminRoute>
+                        <div>
+                            <UpdateBook />
+                        </div>
+                    </AdminRoute>
+                ),
             },
             {
                 path: "manage-books",
-                element:<AdminRoute> <ManageBooks /> </AdminRoute>  
+                element: (
+                    <AdminRoute>
+                        <ManageBooks />
+                    </AdminRoute>
+                ),
             },
-        ]
-    }
+            // New "See Orders" route
+            {
+                path: "see-orders",
+                element: (
+                    <AdminRoute>
+                        <SeeOrders />
+                    </AdminRoute>
+                ),
+            },
+        ],
+    },
 ]);
 
 export default router;
