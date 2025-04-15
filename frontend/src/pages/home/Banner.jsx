@@ -1,29 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-import BannerImage1 from '../../../public/assets/Banner.png';
-import BannerImage2 from '../../../public/assets/Banner2.png';
-import BannerImage3 from '../../../public/assets/Banner3.png';
-
-
-
-import Footer from '../../components/Footer';
-
+// Image paths should be relative to the public directory
 const banners = [
   {
-    image: BannerImage1, // Using the public directory for images
+    image: '../../../public/assets/Banner.png', // Use /assets/Banner.png for images in public folder
     title: 'New Release This Week',
-    text: 'Discover the latest page-turners and timeless classics at our bookstore. From gripping thrillers to heartwarming tales, find your next favorite read. Explore new releases every week and dive into captivating stories. Start your literary adventure today!',
+    text: 'Discover the latest page-turners and timeless classics at our bookstore...',
   },
   {
-    image: BannerImage2, // Using the public directory for images
+    image: '../../../public/assets/Banner1.png', // Use /assets/Banner2.png for images in public folder
     title: 'Explore Bestseller Picks',
-    text: 'Find out what’s trending in the book world. Our bestseller collection is filled with exciting, thought-provoking, and inspiring reads loved by readers worldwide.',
+    text: 'Find out what’s trending in the book world...',
   },
   {
-    image: BannerImage3, // Using the public directory for images
+    image: '../../../public/assets/Banner3.png', // Use /assets/Banner3.png for images in public folder
     title: 'Dive into New Genres',
-    text: 'Step out of your comfort zone and try a new genre. Whether it\'s sci-fi, historical fiction, or memoirs – we have something for every kind of reader.',
+    text: 'Step out of your comfort zone and try a new genre...',
   },
 ];
 
