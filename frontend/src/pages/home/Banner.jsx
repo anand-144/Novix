@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-import { BannerImage1, BannerImage2, BannerImage3 } from '../../assets';
+import BannerImage1 from '../../../public/assets/Banner.png';
+import BannerImage2 from '../../../public/assets/Banner2.png';
+import BannerImage3 from '../../../public/assets/Banner3.png';
+
 
 
 import Footer from '../../components/Footer';

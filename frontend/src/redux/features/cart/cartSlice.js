@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import Swal from 'sweetalert2';
-import AddItem from '../../../assets/AddItem.gif';
+import AddItem from '../../../../public/assets/AddItem.gif';
 
 // Get initial cart data from localStorage (if available)
 const initialState = {

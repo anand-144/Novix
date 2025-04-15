@@ -1,6 +1,6 @@
 // src/components/Footer.jsx
 import React, { useState } from 'react';
-import footerLogo from "../assets/footer-logo.png"; // Adjust the path as needed
+import footerLogo from "../../public/assets/logo.png"; // Adjust the path as needed
 import { db } from '../firebase/firebase.config';
 import { addDoc, collection, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
 import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";

@@ -4,7 +4,7 @@ import Loading from '../../components/Loading';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { HiViewGridAdd } from 'react-icons/hi';
 import { MdOutlineManageHistory, MdShoppingCart } from 'react-icons/md';
-import logo from '../../assets/logo.png';
+import logo from '../../../public/assets/logo.png';
 
 const DashboardLayout = () => {
   const [loading, setLoading] = useState(true);
