@@ -8,7 +8,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://your-frontend.vercel.app'], // update frontend URL
+  origin: ['http://localhost:5173', 'https://novix-frontend.vercel.app'],
   credentials: true
 }));
 
@@ -28,15 +28,28 @@ app.get('/', (req, res) => {
   res.send('Novix server is running!');
 });
 
-// DB connect once
+// MongoDB connection
 let isConnected = false;
 async function connectDB() {
   if (isConnected) return;
-  await mongoose.connect(process.env.DB_URL);
+  await mongoose.connect(process.env.DB_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  });
   isConnected = true;
 }
 
-// Export handler for Vercel
+// Localhost support
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5000;
+  connectDB().then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server running locally on port ${PORT}`);
+    });
+  });
+}
+
+// Vercel export
 module.exports = async (req, res) => {
   await connectDB();
   return app(req, res);
