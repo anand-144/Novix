@@ -1,24 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import BannerImage1 from '../../assets/Banner.png';
-import BannerImage2 from '../../assets/Banner2.png'; // Add another banner image
-import BannerImage3 from '../../assets/Banner3.png'; // Add third banner image
+
+import { BannerImage1, BannerImage2, BannerImage3 } from '../../assets';
+
 
 import Footer from '../../components/Footer';
 
 const banners = [
   {
-    image: BannerImage1,
+    image: BannerImage1, // Using the public directory for images
     title: 'New Release This Week',
     text: 'Discover the latest page-turners and timeless classics at our bookstore. From gripping thrillers to heartwarming tales, find your next favorite read. Explore new releases every week and dive into captivating stories. Start your literary adventure today!',
   },
   {
-    image: BannerImage2,
+    image: BannerImage2, // Using the public directory for images
     title: 'Explore Bestseller Picks',
     text: 'Find out what’s trending in the book world. Our bestseller collection is filled with exciting, thought-provoking, and inspiring reads loved by readers worldwide.',
   },
   {
-    image: BannerImage3,
+    image: BannerImage3, // Using the public directory for images
     title: 'Dive into New Genres',
     text: 'Step out of your comfort zone and try a new genre. Whether it\'s sci-fi, historical fiction, or memoirs – we have something for every kind of reader.',
   },
