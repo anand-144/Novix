@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
- import BannerImage1 from '../../assets/Banner1.png'
+ import BannerImage1 from '../../assets/Banner.png'
  import BannerImage2 from '../../assets/Banner2.png'
  import BannerImage3 from '../../assets/Banner3.png'
 // Image paths should be relative to the public directory
 const banners = [
   {
-    image: BannerImage3, // Use /assets/Banner.png for images in public folder
+    image: BannerImage1, // Use /assets/Banner.png for images in public folder
     title: 'New Release This Week',
     text: 'Discover the latest page-turners and timeless classics at our bookstore...',
   },
   {
-    image: BannerImage3 , // Use /assets/Banner2.png for images in public folder
+    image: BannerImage2 , // Use /assets/Banner2.png for images in public folder
     title: 'Explore Bestseller Picks',
     text: 'Find out what’s trending in the book world...',
   },
