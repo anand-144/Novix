@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
- import BannerImage1 from '../../assets/Banner2.png'
+ import BannerImage1 from '../../assets/Banner1.png'
  import BannerImage2 from '../../assets/Banner2.png'
- import BannerImage3 from '../../assets/Banner2.png'
+ import BannerImage3 from '../../assets/Banner3.png'
 // Image paths should be relative to the public directory
 const banners = [
   {
