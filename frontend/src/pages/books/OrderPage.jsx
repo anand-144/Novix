@@ -1,6 +1,21 @@
 import React from 'react';
 import { useGetOrderByEmailQuery } from '../../redux/orders/ordersApi';
 import { useAuth } from '../../context/AuthContext';
+import { useFetchBookByIdQuery } from '../../redux/features/books/booksApi'; // Import your query
+
+// Component to fetch and display book details
+const BookDetails = ({ productId }) => {
+  const { data: book, isLoading, isError } = useFetchBookByIdQuery(productId);
+
+  if (isLoading) return <li>Loading book...</li>;
+  if (isError || !book) return <li>Error loading book</li>;
+
+  return (
+    <li>
+      <strong>{book.title}</strong> by {book.author || 'Unknown'}
+    </li>
+  );
+};
 
 const OrderPage = () => {
   const { currentUser } = useAuth();
@@ -13,8 +28,6 @@ const OrderPage = () => {
   if (skipQuery) return <div>Loading user...</div>;
   if (isLoading) return <div>Loading orders...</div>;
   if (isError) return <div>Error loading orders</div>;
-
-  console.log(orders);
 
   return (
     <div className="container mx-auto p-6">
@@ -45,13 +58,13 @@ const OrderPage = () => {
                 </>
               )}
 
-              {/* Product IDs Block */}
+              {/* Product Details Block */}
               {order.productIds && order.productIds.length > 0 && (
                 <>
-                  <h3 className="font-semibold mt-2">Product Ids:</h3>
+                  <h3 className="font-semibold mt-2">Products:</h3>
                   <ul>
                     {order.productIds.map((productId) => (
-                      <li key={productId}>{productId}</li>
+                      <BookDetails key={productId} productId={productId} />
                     ))}
                   </ul>
                 </>
