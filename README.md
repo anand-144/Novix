@@ -1,6 +1,14 @@
 # Novix 📚✨
 
-Novix is a modern web application built with the **MERN stack (MongoDB, Express.js, React, Node.js)**. It offers seamless user experience, admin dashboard, Firebase authentication, form handling, charts, toast notifications, and much more.
+Novix is a dynamic and feature-rich online bookstore built with the MERN stack (MongoDB, Express, React, Node.js). Designed for both users and admins, it allows customers to browse, search, and purchase books seamlessly while providing administrators with powerful tools to manage inventory, analyze sales using charts, and track orders.
+
+With Firebase authentication, modern UI components, responsive design, and real-time data handling via Redux Toolkit, Novix offers a smooth and secure user experience. It's a complete, scalable solution for book selling, learning tech integration, and modern web application design.
+
+## 🌍 Live Demo
+
+🔗 [View Live App](https://novix-one.vercel.app/)
+
+(https://i.postimg.cc/9QY1Yfjr/Screenshot-2025-04-17-194849.png)
 
 ## 🚀 Features
 
