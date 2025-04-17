@@ -76,27 +76,21 @@ const Dashboard = () => {
             </svg>
           </div>
           <div>
-            <span className="block text-xl font-bold">${data?.totalSales || 0}</span>
+            <span className="block text-xl font-bold">₹{data?.totalSales || 0}</span>
             <span className="text-gray-500">Total Sales</span>
           </div>
         </div>
 
         {/* Card 3: Trending Books */}
         <div className="flex items-center p-6 bg-white rounded-lg shadow">
-          <div className="flex-shrink-0 flex items-center justify-center h-16 w-16 bg-red-100 text-red-600 rounded-full mr-4">
+          <div className="flex-shrink-0 flex items-center justify-center h-16 w-16 bg-yellow-100 text-yellow-500 rounded-full mr-4">
             <svg
               aria-hidden="true"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+              fill="currentColor"
+              viewBox="0 0 20 20"
               className="h-6 w-6"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"
-              />
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.946a1 1 0 00.95.69h4.15c.969 0 1.371 1.24.588 1.81l-3.36 2.44a1 1 0 00-.364 1.118l1.287 3.946c.3.922-.755 1.688-1.54 1.118l-3.36-2.44a1 1 0 00-1.175 0l-3.36 2.44c-.784.57-1.838-.196-1.54-1.118l1.287-3.946a1 1 0 00-.364-1.118L2.075 9.373c-.783-.57-.38-1.81.588-1.81h4.15a1 1 0 00.95-.69l1.286-3.946z" />
             </svg>
           </div>
           <div>
@@ -104,6 +98,7 @@ const Dashboard = () => {
             <span className="block text-gray-500">Trending Books</span>
           </div>
         </div>
+
 
         {/* Card 4: Total Orders */}
         <div className="flex items-center p-6 bg-white rounded-lg shadow">
