@@ -8,7 +8,7 @@ const port = process.env.PORT || 5000;
 // Middleware
 app.use(express.json());
 app.use(cors({
-    origin: ['http://localhost:5173' , 'https://novix-frontend.vercel.app' , 'https://novix-one.vercel.app'],
+    origin: ['http://localhost:5173' , 'https://novix-one.vercel.app'],
     credentials: true,
     optionsSuccessStatus: 200
 }));
