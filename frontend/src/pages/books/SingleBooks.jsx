@@ -5,13 +5,15 @@ import { useDispatch } from 'react-redux';
 import { addToCart } from '../../redux/features/cart/cartSlice';
 import { useFetchBookByIdQuery } from '../../redux/features/books/booksApi';
 import { getAuth } from 'firebase/auth';  // Import Firebase auth
+import { toast, ToastContainer } from 'react-toastify';  // Import Toastify correctly
+
+// Import Toastify styles
+import 'react-toastify/dist/ReactToastify.css';
 
 const SingleBook = () => {
     const { id } = useParams();
     const { data: book, isLoading, isError } = useFetchBookByIdQuery(id);
     const dispatch = useDispatch();
-
-    console.log(book)
 
     // Get the current user's email from Firebase
     const userEmail = getAuth().currentUser?.email;
@@ -19,15 +21,16 @@ const SingleBook = () => {
     const handleAddToCart = (product) => {
         if (userEmail) {
             dispatch(addToCart({ userEmail, item: product }));
+            // Show toast notification for successful add
+            toast.success(`${product.title} added to cart!`);
         } else {
-            alert("Please log in to add items to the cart.");
+            // Show toast notification if the user is not logged in
+            toast.error("Please log in to add items to the cart.");
         }
     };
 
     if (isLoading) return <div>Loading...</div>;
     if (isError) return <div>Error happened while loading book info</div>;
-
-    console.log(book?.author);
 
     return (
         <div className='flex justify-center px-4'>
@@ -61,7 +64,7 @@ const SingleBook = () => {
                             {book?.description
                                 ? book.description
                                     .split(/\r?\n|\. |; | - /) // You can adjust this regex to fit your description format
-                                    .filter(point => point.trim() !== '')
+                                    .filter(point => point.trim() !== ' ')
                                     .map((point, index) => (
                                         <li key={index}>{point.trim()}</li>
                                     ))
@@ -70,9 +73,6 @@ const SingleBook = () => {
                         </ul>
 
                     </div>
-
-
-
 
                     {/* Price and Add to Cart in same line */}
                     <div className="flex justify-between items-center mt-3">
@@ -89,6 +89,9 @@ const SingleBook = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Toast container */}
+            <ToastContainer />
         </div>
     );
 };

@@ -4,13 +4,13 @@ import { FcGoogle } from "react-icons/fc";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
-  const [message, setMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-
-  const {loginUser , signInWithGoogle} = useAuth();
-  const navigate  = useNavigate()
+  const { loginUser, signInWithGoogle } = useAuth();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -21,24 +21,24 @@ const Login = () => {
   const onSubmit = async (data) => {
     try {
       await loginUser(data.email, data.password);
-      alert("Login successfull !")
-      navigate("/")
+      toast.success("Login successful!");
+      navigate("/");
     } catch (error) {
-      setMessage("Please Provide a valid email and password");
-      console.log(error )
+      toast.error("Please provide a valid email and password.");
+      console.log(error);
     }
-  }
+  };
 
-  const handleGoogleSignIn = async () =>{
+  const handleGoogleSignIn = async () => {
     try {
-        await signInWithGoogle();
-        alert("Login Successful!");
-        navigate("/")
+      await signInWithGoogle();
+      toast.success("Login Successful!");
+      navigate("/");
     } catch (error) {
-      alert("Google Sign in failed !")
-      console.log(error)
+      toast.error("Google Sign-in failed!");
+      console.log(error);
     }
-  }
+  };
 
   return (
     <div className='min-h-[calc(100vh-120px)] flex justify-center items-center px-4'>
@@ -101,10 +101,6 @@ const Login = () => {
             </div>
           </div>
 
-          {message && (
-            <p className='text-red-500 text-xs italic mb-3'>{message}</p>
-          )}
-
           <div className='mb-6'>
             <button
               type='submit'
@@ -125,15 +121,16 @@ const Login = () => {
         {/* Google Login */}
         <div className='mb-6'>
           <button
-            onClick={handleGoogleSignIn}      
-            className='w-full flex items-center justify-center gap-2 bg-secondary hover:bg-emerald-900 text-white font-bold py-2 px-4 rounded focus:outline-none'>
+            onClick={handleGoogleSignIn}
+            className='w-full flex items-center justify-center gap-2 bg-secondary hover:bg-emerald-900 text-white font-bold py-2 px-4 rounded focus:outline-none'
+          >
             <FcGoogle className='text-xl' />
             Sign in with Google
           </button>
         </div>
 
         <p className='mt-4 text-center text-gray-500 text-sm flex items-center justify-center gap-1'>
-        © 2025 Novix. All rights reserved.
+          © 2025 Novix. All rights reserved.
         </p>
       </div>
     </div>

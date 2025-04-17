@@ -1,15 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useUpdateOrderStatusMutation } from '../../redux/orders/ordersApi';  // Make sure to import the hook
+import { useUpdateOrderStatusMutation } from '../../redux/orders/ordersApi';  
+import { useFetchBookByIdQuery } from '../../redux/features/books/booksApi';
+import { toast } from 'react-toastify';  // Import Toastify
+
+// Import Toastify styles
+import 'react-toastify/dist/ReactToastify.css';
+
+const BookDetails = ({ productId }) => {
+  const { data: book, isLoading, isError } = useFetchBookByIdQuery(productId);
+
+  if (isLoading) return <li>Loading book...</li>;
+  if (isError || !book) return <li>Error loading book</li>;
+
+  return (
+    <li>
+      <strong>{book.title}</strong> by {book.author || 'Unknown'}
+    </li>
+  );
+};
 
 const SeeOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [statusUpdates, setStatusUpdates] = useState({}); // Track status changes
+  const [statusUpdates, setStatusUpdates] = useState({});
   const ordersPerPage = 5;
-  
-  // Use the mutation hook
+
   const [updateOrderStatus] = useUpdateOrderStatusMutation();
 
   useEffect(() => {
@@ -44,16 +61,22 @@ const SeeOrders = () => {
     }
   };
 
-  const handleStatusChange = async (orderId, status) => {
+  const handleStatusChange = (orderId, newStatus) => {
+    setStatusUpdates((prev) => ({
+      ...prev,
+      [orderId]: newStatus,
+    }));
+  };
+
+  const handleUpdateStatus = async (orderId, status) => {
     try {
-        await updateOrderStatus({ id: orderId, status });
-        // Optionally, refetch the data or update the local state after successful status update
-        alert('Order status updated successfully!');
+      await updateOrderStatus({ id: orderId, status });
+      toast.success('Order status updated successfully!');  // Toast for success
     } catch (error) {
-        console.error('Error updating order status:', error);
-        alert('Failed to update status');
+      console.error('Error updating order status:', error);
+      toast.error('Failed to update status');  // Toast for error
     }
-};
+  };
 
   if (loading) return <div>Loading orders...</div>;
 
@@ -75,15 +98,15 @@ const SeeOrders = () => {
               <p className='text-gray-600'>Email: {order.email}</p>
               <p className='text-gray-600'>Phone: {order.phone}</p>
               <p className='text-gray-600'>Total Price 💸 : ₹ {order.totalPrice}</p>
-              <p className='text-gray-600'>Payment Method : {order.paymentMethod }</p>
+              <p className='text-gray-600'>Payment Method : {order.paymentMethod}</p>
 
               <h3 className='font-semibold mt-2'>Address:</h3>
               <p>{order.address?.street}, {order.address?.city}, {order.address?.state}, {order.address?.country}, {order.address?.zipcode}</p>
 
-              <h3 className='font-semibold mt-2'>Product IDs:</h3>
+              <h3 className='font-semibold mt-2'>Books:</h3>
               <ul className='list-disc ml-6'>
                 {order.productIds.map((productId) => (
-                  <li key={productId}>{productId}</li>
+                  <BookDetails key={productId} productId={productId} />
                 ))}
               </ul>
 

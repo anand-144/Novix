@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Register = () => {
   const [message, setMessage] = useState("");
@@ -19,7 +21,6 @@ const Register = () => {
     formState: { errors },
   } = useForm();
 
-  // Validate that the confirm password matches the password
   const password = watch("password");
 
   const onSubmit = async (data) => {
@@ -30,7 +31,7 @@ const Register = () => {
     setIsSubmitting(true);
     try {
       await registerUser(data.email, data.password);
-      alert("User Registered Successfully");
+      toast.success("User Registered Successfully");
       navigate("/login");
     } catch (error) {
       if (error.code === "auth/weak-password") {
@@ -47,24 +48,22 @@ const Register = () => {
   const handleGoogleSignIn = async () => {
     try {
       await signInWithGoogle();
-      alert("Registration Successful!");
+      toast.success("Registration Successful!");
       navigate("/");
     } catch (error) {
-      alert("Google registration has failed!");
+      toast.error("Google registration has failed!");
       console.log(error);
     }
   };
 
   return (
     <div className='min-h-[calc(100vh-120px)] flex justify-center items-center px-4'>
-      {/* Adding a fade-in animation */}
-      <div className='w-full max-w-md bg-white shadow-md rounded px-6 py-8 animate-fadeIn'>
+      <div className='w-full max-w-md bg-white shadow-md rounded px-6 py-8'>
         <h2 className='text-2xl font-semibold mb-6 text-center underline'>
           <span className='text-yellow-500'>Please</span> Register
         </h2>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          {/* Email Field */}
           <div className='mb-5'>
             <label className='block text-gray-700 text-sm font-bold mb-2' htmlFor="email">
               Email
@@ -87,7 +86,6 @@ const Register = () => {
             )}
           </div>
 
-          {/* Password Field */}
           <div className='mb-5 relative'>
             <label className='block text-gray-700 text-sm font-bold mb-2' htmlFor="password">
               Password
@@ -108,7 +106,6 @@ const Register = () => {
             {errors.password && (
               <p className='text-red-500 text-xs italic mt-1'>{errors.password.message}</p>
             )}
-            {/* Eye Toggle Icon */}
             <div
               className='absolute right-0 bottom-0.5 transform -translate-y-1/2 pr-3 flex items-center cursor-pointer'
               onClick={() => setShowPassword((prev) => !prev)}
@@ -121,7 +118,6 @@ const Register = () => {
             </div>
           </div>
 
-          {/* Confirm Password Field (without duplicate toggle icon) */}
           <div className='mb-5'>
             <label className='block text-gray-700 text-sm font-bold mb-2' htmlFor="confirmPassword">
               Confirm Password
@@ -160,7 +156,6 @@ const Register = () => {
           </Link>
         </p>
 
-        {/* Google Login */}
         <div className='mb-6'>
           <button
             onClick={handleGoogleSignIn}

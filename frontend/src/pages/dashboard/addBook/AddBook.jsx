@@ -11,18 +11,17 @@ const AddBook = () => {
     const [imageFileName1, setimageFileName1] = useState('');
     const [addBook, { isLoading }] = useAddBookMutation();
 
-    
     const handleCoverImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            validateImageDimensions(file, setimageFileName, 'cover');
+            setimageFileName(file.name); // Just set the file name without dimension check
         }
     };
 
     const handleBackImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            validateImageDimensions(file, setimageFileName1, 'back');
+            setimageFileName1(file.name); // Just set the file name without dimension check
         }
     };
 
