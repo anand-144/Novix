@@ -37,6 +37,7 @@ With Firebase authentication, modern UI components, responsive design, and real-
 - SweetAlert2
 - Swiper.js
 - Axios
+- -Tailwind Css
 
 ### Backend
 - Node.js
@@ -67,15 +68,15 @@ npm install
 
 ## 🏃‍♂️Run the project:
 
-# In one terminal for backend
+## In one terminal for backend
 cd server
 npm start
 
-# In another terminal for frontend
+## In another terminal for frontend
 cd client
 npm run dev
 
-# 🙋‍♂️ Author
+## 🙋‍♂️ Author
 Made with 💻 by Anand Singh
 
 ## 📬 Feedback & Contributions
@@ -86,7 +87,5 @@ Share with others!
 
 ## 📄 License
 This project is open source and available under the MIT License.
-
-
 
 ## Happy coding! 🚀
