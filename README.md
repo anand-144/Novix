@@ -8,7 +8,7 @@ With Firebase authentication, modern UI components, responsive design, and real-
 
 🔗 [View Live App](https://novix-one.vercel.app/)
 
-🌄 [Image](https://i.postimg.cc/9QY1Yfjr/Screenshot-2025-04-17-194849.png)
+🌄[Novix Screenshot](https://i.postimg.cc/9QY1Yfjr/Screenshot-2025-04-17-194849.png)
 
 ## 🚀 Features
 
