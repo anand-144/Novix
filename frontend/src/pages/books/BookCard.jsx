@@ -34,7 +34,7 @@ const BookCard = ({ book }) => {
             </h3>
           </Link>
           <h4 className="text-xl font-semibold hover:text-blue-600 mb-3">
-            {book?.category}
+            Gener : {book?.category}
           </h4>
           <p className="text-gray-600 mb-5">
             {book?.description && book.description.length > 80
